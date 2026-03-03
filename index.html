@@ -4,884 +4,392 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Sage">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="application-name" content="Sage">
-<title>Sage — Personal Secretary</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23C8A44E'/><stop offset='100%25' stop-color='%23A07D2E'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='%230C0F14'/><circle cx='50' cy='38' r='16' fill='url(%23g)' opacity='0.9'/><path d='M28 72c0-12.15 9.85-22 22-22s22 9.85 22 22' fill='url(%23g)' opacity='0.7'/><path d='M44 34 l4 6 l8-10' stroke='%230C0F14' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230C0F14'/><circle cx='50' cy='38' r='16' fill='%23C8A44E' opacity='0.9'/><path d='M28 72c0-12.15 9.85-22 22-22s22 9.85 22 22' fill='%23C8A44E' opacity='0.7'/></svg>">
+<title>Sage - Personal Secretary</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU2FnZSIsInNob3J0X25hbWUiOiJTYWdlIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNGRkZGRkYiLCJ0aGVtZV9jb2xvciI6IiNGRkZGRkYifQ==">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #FFFFFF;
-    --surface: #F5F5F0;
-    --surfaceHover: #EEEEE8;
-    --border: #D4D4CC;
-    --borderLight: #E0E0D8;
-    --text: #1A1A1A;
-    --textMuted: #5C5C5C;
-    --textDim: #8C8C8C;
-    --accent: #9E7C2B;
-    --accentSoft: rgba(158,124,43,0.1);
-    --success: #2E8B57;
-    --successSoft: rgba(46,139,87,0.1);
-    --danger: #C0392B;
-    --dangerSoft: rgba(192,57,43,0.08);
-    --high: #C0392B;
-    --medium: #D4890A;
-    --low: #2874A6;
-  }
-
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-  body {
-    font-family: 'DM Sans','Segoe UI',sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .topbar {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:16px 20px 12px;
-    background:var(--surface);
-    border-bottom:1px solid var(--borderLight);
-    flex-shrink:0;
-  }
-  .topbar-brand {
-    font-family:'Playfair Display',Georgia,serif;
-    font-size:30px; font-weight:700; color:var(--accent);
-    letter-spacing:0.5px;
-  }
-  .topbar-sub { font-size:16px; color:var(--textDim); text-transform:uppercase; letter-spacing:1.5px; }
-
-  .content { flex:1; overflow-y:auto; padding:20px; -webkit-overflow-scrolling:touch; }
-
-  .bottom-nav {
-    display:flex; background:var(--surface); border-top:1px solid var(--borderLight);
-    flex-shrink:0; padding:6px 0 max(6px,env(safe-area-inset-bottom));
-  }
-  .nav-btn {
-    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
-    padding:8px 0; border:none; background:none; color:var(--textDim);
-    font-family:'DM Sans',sans-serif; font-size:16px; cursor:pointer; transition:color .15s;
-  }
-  .nav-btn.active { color:var(--accent); }
-  .nav-btn svg { width:26px; height:26px; }
-
-  .section-title {
-    font-family:'Playfair Display',Georgia,serif;
-    font-size:30px; font-weight:600; margin-bottom:4px;
-  }
-  .section-sub { font-size:16px; color:var(--textMuted); margin-bottom:20px; }
-  .card {
-    background:var(--surface); border:1px solid var(--borderLight);
-    border-radius:12px; padding:14px 16px; margin-bottom:8px; transition:border-color .2s;
-  }
-  .btn-primary {
-    background:var(--accent); border:none; color:#FFFFFF;
-    border-radius:10px; padding:10px 20px; font-family:'DM Sans',sans-serif;
-    font-size:17px; font-weight:600; cursor:pointer;
-  }
-  .btn-icon {
-    width:36px; height:36px; border-radius:10px; border:none;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    background:var(--accentSoft); color:var(--accent); flex-shrink:0;
-  }
-  .input {
-    width:100%; background:var(--surfaceHover); border:1px solid var(--border);
-    border-radius:10px; padding:12px 14px; color:var(--text);
-    font-family:'DM Sans',sans-serif; font-size:17px; outline:none;
-  }
-  .input::placeholder { color:var(--textDim); }
-  .input-sm {
-    background:var(--surface); border:1px solid var(--border); border-radius:8px;
-    padding:7px 10px; color:var(--textMuted); font-family:'DM Sans',sans-serif;
-    font-size:18px; outline:none;
-  }
-  .pill {
-    font-size:16px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
-    padding:2px 8px; border-radius:5px;
-  }
-  .row { display:flex; align-items:center; gap:10px; }
-  .row-between { display:flex; align-items:center; justify-content:space-between; }
-  .flex-1 { flex:1; min-width:0; }
-  .gap-8 { gap:8px; }
-  .mt-10 { margin-top:10px; }
-  .mb-12 { margin-bottom:12px; }
-  .mb-16 { margin-bottom:16px; }
-  .truncate { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-  .icon-btn-sm {
-    background:none; border:none; color:var(--textDim); cursor:pointer;
-    padding:4px; opacity:0.5; display:flex; align-items:center;
-  }
-
-  .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px; }
-  .stat-card {
-    background:var(--surface); border:1px solid var(--borderLight);
-    border-radius:14px; padding:16px 14px; cursor:pointer; transition:all .2s;
-  }
-  .stat-card:active { transform:scale(0.97); }
-  .stat-value { font-family:'Playfair Display',Georgia,serif; font-size:32px; font-weight:700; }
-  .stat-label { font-size:14px; color:var(--textMuted); margin-top:2px; }
-
-  .checkbox {
-    width:22px; height:22px; min-width:22px; border-radius:6px;
-    border:2px solid var(--border); background:transparent; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    color:var(--success); transition:all .15s; flex-shrink:0;
-  }
-  .checkbox.done { border-color:var(--success); background:var(--successSoft); }
-
-  .chat-area {
-    flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-bottom:8px;
-  }
-  .msg { max-width:85%; padding:12px 16px; font-size:17px; line-height:1.6; white-space:pre-wrap; }
-  .msg-user { align-self:flex-end; background:var(--accent); color:#FFFFFF; border-radius:16px 16px 4px 16px; }
-  .msg-ai { align-self:flex-start; background:var(--surfaceHover); border:1px solid var(--border); border-radius:16px 16px 16px 4px; }
-  .chat-input-row { display:flex; gap:8px; margin-top:10px; flex-shrink:0; align-items:center; }
-
-  .send-btn {
-    width:46px; height:46px; border-radius:12px; border:none;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; flex-shrink:0; transition:all .2s;
-  }
-
-  /* Voice button */
-  .voice-btn {
-    width:46px; height:46px; border-radius:12px; border:none;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; flex-shrink:0; transition:all .2s;
-    background:var(--surfaceHover); color:var(--textMuted);
-    position:relative;
-  }
-  .voice-btn.recording {
-    background:var(--dangerSoft); color:var(--danger);
-    animation: pulse-ring 1.5s ease infinite;
-  }
-  @keyframes pulse-ring {
-    0% { box-shadow:0 0 0 0 rgba(248,113,113,0.4); }
-    70% { box-shadow:0 0 0 10px rgba(248,113,113,0); }
-    100% { box-shadow:0 0 0 0 rgba(248,113,113,0); }
-  }
-  .voice-btn.recording::before {
-    content:'';
-    position:absolute;
-    width:10px; height:10px;
-    border-radius:50%;
-    background:var(--danger);
-    top:6px; right:6px;
-    animation:blink-dot 1s infinite;
-  }
-  @keyframes blink-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  .note-item {
-    padding:12px 14px; border-radius:10px; cursor:pointer;
-    border:1px solid var(--borderLight); background:var(--surface);
-    margin-bottom:6px; position:relative; overflow:hidden; transition:border-color .2s;
-  }
-  .note-item.active { border-color:rgba(200,164,78,0.3); background:var(--surfaceHover); }
-  .note-bar { position:absolute; top:0; left:0; width:3px; height:100%; border-radius:10px 0 0 10px; }
-  .note-editor {
-    width:100%; min-height:200px; background:var(--surface);
-    border:1px solid var(--borderLight); border-radius:12px; padding:16px;
-    color:var(--text); font-family:'DM Sans',sans-serif; font-size:17px;
-    line-height:1.7; outline:none; resize:none;
-  }
-  .form-panel {
-    background:var(--surfaceHover); border-radius:12px; padding:16px;
-    margin-bottom:16px; border:1px solid var(--border);
-  }
-  .priority-btn {
-    border-radius:6px; padding:5px 12px; font-size:18px;
-    font-family:'DM Sans',sans-serif; cursor:pointer;
-    text-transform:capitalize; background:transparent;
-  }
-  @keyframes blink { 0%,20%{opacity:1} 50%{opacity:.3} 80%,100%{opacity:1} }
-  .typing::after { content:'...'; animation:blink 1.4s infinite; }
-
-  /* Voice overlay for non-chat tabs */
-  .voice-overlay {
-    display:none;
-    position:fixed; inset:0;
-    background:rgba(12,15,20,0.92);
-    z-index:999;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:20px;
-  }
-  .voice-overlay.active { display:flex; }
-  .voice-ring {
-    width:120px; height:120px; border-radius:50%;
-    background:var(--dangerSoft); border:3px solid var(--danger);
-    display:flex; align-items:center; justify-content:center;
-    animation:pulse-ring 1.5s ease infinite;
-  }
-  .voice-ring svg { width:48px; height:48px; color:var(--danger); }
-  .voice-transcript {
-    font-family:'DM Sans',sans-serif; font-size:22px; color:var(--text);
-    text-align:center; max-width:80%; min-height:30px;
-  }
-  .voice-hint { font-size:16px; color:var(--textMuted); }
-
-  /* Install banner */
-  .install-banner {
-    display:none;
-    background:var(--surfaceHover);
-    border:1px solid var(--accent);
-    border-radius:12px;
-    padding:14px 16px;
-    margin-bottom:16px;
-    font-size:16px;
-    color:var(--textMuted);
-    line-height:1.5;
-  }
-  .install-banner strong { color:var(--accent); }
-  .install-banner .dismiss {
-    background:none; border:none; color:var(--textDim); cursor:pointer;
-    font-size:22px; float:right; margin:-4px -4px 0 8px;
-  }
+:root{--bg:#FFF;--surface:#F4F3EE;--surfaceHover:#EAE9E2;--border:#D2D0C8;--borderLight:#DDDBD4;--text:#1A1A1A;--textMuted:#555;--textDim:#888;--accent:#9E7C2B;--accentSoft:rgba(158,124,43,.10);--success:#2E7D53;--successSoft:rgba(46,125,83,.10);--danger:#B83220;--dangerSoft:rgba(184,50,32,.08);--high:#B83220;--medium:#C47F09;--low:#2670A0;--info:#5B6ABF;--infoSoft:rgba(91,106,191,.10)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans','Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+a{color:var(--accent);text-decoration:none}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;background:var(--surface);border-bottom:1px solid var(--borderLight);flex-shrink:0}
+.content{flex:1;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch}
+.bottom-nav{display:flex;background:var(--surface);border-top:1px solid var(--borderLight);flex-shrink:0;padding:6px 0 max(6px,env(safe-area-inset-bottom))}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;border:none;background:none;color:var(--textDim);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer}
+.nav-btn.active{color:var(--accent)}
+.nav-btn svg{width:26px;height:26px}
+.section-title{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:600;margin-bottom:4px}
+.card{background:var(--surface);border:1px solid var(--borderLight);border-radius:12px;padding:14px 16px;margin-bottom:8px;transition:all .15s}
+.btn-primary{background:var(--accent);border:none;color:#FFF;border-radius:10px;padding:12px 22px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer}
+.btn-secondary{background:var(--surfaceHover);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer}
+.btn-sm{background:var(--surfaceHover);border:1px solid var(--border);color:var(--textMuted);border-radius:8px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.btn-icon{width:40px;height:40px;border-radius:10px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--accentSoft);color:var(--accent);flex-shrink:0}
+.input{width:100%;background:var(--surfaceHover);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:17px;outline:none}
+.input::placeholder{color:var(--textDim)}
+.input-sm{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--textMuted);font-family:'DM Sans',sans-serif;font-size:15px;outline:none}
+.pill{font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:5px}
+.cat-pill{font-size:11px;padding:2px 7px;border-radius:4px;background:var(--infoSoft);color:var(--info)}
+.row{display:flex;align-items:center;gap:10px}
+.row-between{display:flex;align-items:center;justify-content:space-between}
+.flex-1{flex:1;min-width:0}
+.gap-8{gap:8px}
+.gap-6{gap:6px}
+.truncate{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn-sm{background:none;border:none;color:var(--textDim);cursor:pointer;padding:4px;opacity:.6;display:flex;align-items:center}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--borderLight);border-radius:14px;padding:18px 14px;cursor:pointer}
+.stat-value{font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:700}
+.stat-label{font-size:14px;color:var(--textMuted);margin-top:2px}
+.checkbox{width:26px;height:26px;min-width:26px;border-radius:7px;border:2px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--success);flex-shrink:0}
+.checkbox.done{border-color:var(--success);background:var(--successSoft)}
+.msg{max-width:85%;padding:14px 18px;font-size:17px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
+.msg-user{align-self:flex-end;background:var(--accent);color:#FFF;border-radius:16px 16px 4px 16px}
+.msg-ai{align-self:flex-start;background:var(--surfaceHover);border:1px solid var(--border);border-radius:16px 16px 16px 4px}
+.chat-input-row{display:flex;gap:8px;margin-top:10px;flex-shrink:0;align-items:center}
+.send-btn,.voice-btn{width:50px;height:50px;border-radius:12px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.voice-btn{background:var(--surfaceHover);color:var(--textMuted);position:relative}
+.voice-btn.recording{background:var(--dangerSoft);color:var(--danger);animation:pr 1.5s ease infinite}
+@keyframes pr{0%{box-shadow:0 0 0 0 rgba(184,50,32,.3)}70%{box-shadow:0 0 0 10px rgba(184,50,32,0)}100%{box-shadow:0 0 0 0 rgba(184,50,32,0)}}
+.voice-btn.recording::before{content:'';position:absolute;width:10px;height:10px;border-radius:50%;background:var(--danger);top:6px;right:6px;animation:bdd 1s infinite}
+@keyframes bdd{0%,100%{opacity:1}50%{opacity:.3}}
+.note-item{padding:14px 16px;border-radius:10px;cursor:pointer;border:1px solid var(--borderLight);background:var(--surface);margin-bottom:6px;position:relative;overflow:hidden}
+.note-bar{position:absolute;top:0;left:0;width:4px;height:100%;border-radius:10px 0 0 10px}
+.note-editor{width:100%;min-height:200px;background:var(--surface);border:1px solid var(--borderLight);border-radius:12px;padding:16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:17px;line-height:1.7;outline:none;resize:none}
+.form-panel{background:var(--surfaceHover);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid var(--border)}
+.priority-btn{border-radius:6px;padding:6px 14px;font-size:15px;font-family:'DM Sans',sans-serif;cursor:pointer;text-transform:capitalize;background:transparent}
+.voice-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.95);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.voice-overlay.active{display:flex}
+.voice-ring{width:120px;height:120px;border-radius:50%;background:var(--dangerSoft);border:3px solid var(--danger);display:flex;align-items:center;justify-content:center;animation:pr 1.5s ease infinite}
+.voice-ring svg{width:48px;height:48px;color:var(--danger)}
+.search-results{background:var(--surface);border:1px solid var(--borderLight);border-radius:12px;margin-top:8px;overflow:hidden}
+.search-result{padding:14px 16px;border-bottom:1px solid var(--borderLight);cursor:pointer;display:flex;align-items:center;gap:12px}
+.search-result:last-child{border-bottom:none}
+.search-badge{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px;flex-shrink:0}
+.briefing-card{background:linear-gradient(135deg,var(--accentSoft),rgba(158,124,43,.02));border:1px solid rgba(158,124,43,.2);border-radius:14px;padding:18px;margin-bottom:12px;cursor:pointer}
+.overdue{border-left:3px solid var(--danger)!important}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:998;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:var(--bg);border-radius:16px;padding:24px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.filter-btn{padding:6px 14px;border-radius:20px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--textMuted)}
+.filter-btn.active{background:var(--accent);color:#FFF;border-color:var(--accent)}
+@keyframes bl{0%,20%{opacity:1}50%{opacity:.3}80%,100%{opacity:1}}
+.typing::after{content:'...';animation:bl 1.4s infinite}
 </style>
 </head>
 <body>
-
 <div class="topbar">
-  <div>
-    <div class="topbar-brand">Sage</div>
-    <div class="topbar-sub">Personal Secretary</div>
-  </div>
-  <div style="text-align:right">
-    <div style="font-size:16px;font-weight:500">Rafik S. Gabriel</div>
-    <div style="font-size:14px;color:var(--textDim)">Chairman · Metal Tube</div>
-  </div>
+  <div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--accent)">Sage</div><div style="font-size:13px;color:var(--textDim);text-transform:uppercase;letter-spacing:1.5px">Personal Secretary</div></div>
+  <div style="text-align:right"><div style="font-size:16px;font-weight:500">Rafik S. Gabriel</div><div style="font-size:14px;color:var(--textDim)">Chairman - Metal Tube</div></div>
 </div>
-
 <div class="content" id="content"></div>
-
-<!-- Voice overlay for non-chat screens -->
-<div class="voice-overlay" id="voiceOverlay">
-  <div class="voice-ring">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
-    </svg>
-  </div>
-  <div class="voice-transcript" id="voiceOverlayText">Listening...</div>
-  <div class="voice-hint">Tap anywhere to stop</div>
+<div class="voice-overlay" id="voiceOverlay" onclick="stopVoice()">
+  <div class="voice-ring"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg></div>
+  <div id="voiceOverlayText" style="font-size:20px;color:var(--text);text-align:center;max-width:80%">Listening...</div>
+  <div style="font-size:16px;color:var(--textMuted)">Tap anywhere to stop</div>
 </div>
-
+<div class="modal-overlay" id="editModal"><div class="modal" id="editModalContent"></div></div>
 <div class="bottom-nav">
-  <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-    Home
-  </button>
-  <button class="nav-btn" data-tab="tasks" onclick="switchTab('tasks')">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-    Tasks
-  </button>
-  <button class="nav-btn" data-tab="notes" onclick="switchTab('notes')">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-    Notes
-  </button>
-  <button class="nav-btn" data-tab="schedule" onclick="switchTab('schedule')">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" d="M16 2v4M8 2v4M3 10h18"/></svg>
-    Schedule
-  </button>
-  <button class="nav-btn" data-tab="chat" onclick="switchTab('chat')">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-    Sage
-  </button>
-  <button class="nav-btn" data-tab="settings" onclick="switchTab('settings')">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-    <span style="font-size:18px">Settings</span>
-  </button>
+  <button class="nav-btn active" data-tab="home" onclick="switchTab('home')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Home</button>
+  <button class="nav-btn" data-tab="tasks" onclick="switchTab('tasks')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>Tasks</button>
+  <button class="nav-btn" data-tab="notes" onclick="switchTab('notes')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>Notes</button>
+  <button class="nav-btn" data-tab="schedule" onclick="switchTab('schedule')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" d="M16 2v4M8 2v4M3 10h18"/></svg>Schedule</button>
+  <button class="nav-btn" data-tab="chat" onclick="switchTab('chat')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Sage</button>
+  <button class="nav-btn" data-tab="settings" onclick="switchTab('settings')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg><span style="font-size:11px">Settings</span></button>
 </div>
-
+<input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
 <script>
-// ── Utilities ──────────────────────────────────────────
-const uid = () => Math.random().toString(36).slice(2,10);
-const todayStr = () => new Date().toISOString().split('T')[0];
-const fmtDate = d => new Date(d+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-const fmtTime = t => { const [h,m]=t.split(':'); const hr=+h; return `${hr>12?hr-12:hr||12}:${m} ${hr>=12?'PM':'AM'}`; };
-const greeting = () => { const h=new Date().getHours(); return h<12?'Good morning':h<17?'Good afternoon':'Good evening'; };
-function esc(s) { if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+/* === UTILS === */
+var uid=function(){return Math.random().toString(36).slice(2,10)};
+var todayStr=function(){return new Date().toISOString().split('T')[0]};
+var fmtDate=function(d){return new Date(d+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})};
+var fmtTime=function(t){var p=t.split(':'),hr=+p[0],m=p[1];return(hr>12?hr-12:hr||12)+':'+m+(hr>=12?' PM':' AM')};
+var greeting=function(){var h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'};
+function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function isOverdue(d){return d<todayStr()}
+var CATEGORIES=['General','Metal Projects','Scaffolding','Formwork','Storage','Sports Structures','Metal Arts','Export/MENA'];
+var micSVG='<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>';
+var plusSVG='<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14m-7-7h14"/></svg>';
+var trashSVG='<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
+var checkSVG='<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+var starSVG='<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+var editSVG='<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>';
+var searchSVG='<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>';
+var calSVG='<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>';
 
-// ── State ──────────────────────────────────────────────
-let state = {
-  tab: 'home',
-  tasks: [
-    {id:uid(),title:'Review BD Manager candidate shortlist',priority:'high',dueDate:todayStr(),done:false,starred:true},
-    {id:uid(),title:'Prepare Q1 export performance report',priority:'high',dueDate:'2026-03-07',done:false,starred:false},
-    {id:uid(),title:'Follow up with MENA distribution leads',priority:'medium',dueDate:'2026-03-05',done:false,starred:false},
-  ],
-  notes: [
-    {id:uid(),title:'BD Manager Hiring Notes',body:"Key requirements:\n- 5+ years in steel/scaffolding/formwork\n- MENA market experience\n- Strong relationship building\n\nPotential sources:\n- LinkedIn targeting\n- LinkMisr, ACROW competitors",color:'#C8A44E'},
-  ],
-  events: [
-    {id:uid(),title:'Leadership sync with Eng. Samy',date:todayStr(),time:'10:00',duration:60,note:'Monthly review'},
-    {id:uid(),title:'BD Manager interview - Round 1',date:'2026-03-05',time:'14:00',duration:45,note:'Candidate from scaffolding sector'},
-  ],
-  activeNote: null,
-  addingTask: false,
-  addingEvent: false,
-  chatMessages: [{role:'assistant',content:`${greeting()}, Rafik. I'm Sage, your personal secretary. How can I assist you today?\n\nI can help you think through tasks, prepare for meetings, draft communications, or organize your priorities. You can also tap the microphone to speak to me.`}],
-  chatLoading: false,
+/* === STATE === */
+var DEFAULTS={
+  tasks:[{id:uid(),title:'Review BD Manager candidate shortlist',priority:'high',dueDate:todayStr(),done:false,starred:true,category:'General'},{id:uid(),title:'Prepare Q1 export performance report',priority:'high',dueDate:'2026-03-07',done:false,starred:false,category:'Export/MENA'},{id:uid(),title:'Follow up with MENA distribution leads',priority:'medium',dueDate:'2026-03-05',done:false,starred:false,category:'Export/MENA'}],
+  notes:[{id:uid(),title:'BD Manager Hiring Notes',body:"Key requirements:\n- 5+ years in steel/scaffolding/formwork\n- MENA market experience\n- Strong relationship building\n\nPotential sources:\n- LinkedIn targeting\n- LinkMisr, ACROW competitors",color:'#9E7C2B'}],
+  events:[{id:uid(),title:'Leadership sync with Eng. Samy',date:todayStr(),time:'10:00',duration:60,note:'Monthly review',repeat:'none'},{id:uid(),title:'BD Manager interview - Round 1',date:'2026-03-05',time:'14:00',duration:45,note:'Candidate from scaffolding sector',repeat:'none'}],
+  chatMessages:[{role:'assistant',content:''}]
 };
-
-// ── Persistence ────────────────────────────────────────
-function save() {
-  try { localStorage.setItem('sage_state', JSON.stringify({tasks:state.tasks,notes:state.notes,events:state.events,chatMessages:state.chatMessages})); } catch(e){}
+function loadState(){
+  var s=null;try{s=JSON.parse(localStorage.getItem('sage_data'))}catch(e){}
+  var tasks=(s&&s.tasks)?s.tasks:DEFAULTS.tasks;
+  var notes=(s&&s.notes)?s.notes:DEFAULTS.notes;
+  var events=(s&&s.events)?s.events:DEFAULTS.events;
+  events.forEach(function(e){if(!e.repeat)e.repeat='none'});
+  tasks.forEach(function(t){if(!t.category)t.category='General'});
+  var chatMessages=(s&&s.chatMessages&&s.chatMessages.length>0)?s.chatMessages:[{role:'assistant',content:greeting()+", Rafik. I'm Sage, your personal secretary.\n\nHow can I assist you today?"}];
+  return{tab:'home',tasks:tasks,notes:notes,events:events,chatMessages:chatMessages,activeNote:null,addingTask:false,addingEvent:false,chatLoading:false,searchQuery:'',briefing:null,briefingLoading:false,taskFilter:'all'};
 }
-function load() {
-  try {
-    const d = JSON.parse(localStorage.getItem('sage_state'));
-    if(d) { if(d.tasks) state.tasks=d.tasks; if(d.notes) state.notes=d.notes; if(d.events) state.events=d.events; if(d.chatMessages&&d.chatMessages.length) state.chatMessages=d.chatMessages; }
-  } catch(e){}
-}
-load();
+var state=loadState();
+function save(){try{localStorage.setItem('sage_data',JSON.stringify({tasks:state.tasks,notes:state.notes,events:state.events,chatMessages:state.chatMessages}))}catch(e){}}
 
-// ── Voice Recognition ──────────────────────────────────
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = null;
-let isRecording = false;
-let voiceTarget = null; // 'chat' or 'overlay'
-
-function initSpeech() {
-  if(!SpeechRecognition) return null;
-  const r = new SpeechRecognition();
-  r.continuous = false;
-  r.interimResults = true;
-  r.lang = 'en-US';
-  r.maxAlternatives = 1;
-
-  r.onresult = (e) => {
-    let transcript = '';
-    for(let i = e.resultIndex; i < e.results.length; i++) {
-      transcript += e.results[i][0].transcript;
-    }
-    if(voiceTarget === 'chat') {
-      const input = document.getElementById('chatInput');
-      if(input) input.value = transcript;
-    } else {
-      const txt = document.getElementById('voiceOverlayText');
-      if(txt) txt.textContent = transcript || 'Listening...';
-    }
-    // If final result
-    if(e.results[e.results.length-1].isFinal) {
-      if(voiceTarget === 'chat') {
-        const input = document.getElementById('chatInput');
-        if(input) input.value = transcript;
-      } else {
-        processVoiceCommand(transcript);
-      }
-    }
-  };
-
-  r.onend = () => {
-    isRecording = false;
-    const btn = document.getElementById('voiceBtn');
-    if(btn) btn.classList.remove('recording');
-    const overlay = document.getElementById('voiceOverlay');
-    if(overlay) overlay.classList.remove('active');
-  };
-
-  r.onerror = (e) => {
-    isRecording = false;
-    const btn = document.getElementById('voiceBtn');
-    if(btn) btn.classList.remove('recording');
-    const overlay = document.getElementById('voiceOverlay');
-    if(overlay) overlay.classList.remove('active');
-  };
-
-  return r;
+/* === OFFLINE SERVICE WORKER === */
+if('serviceWorker' in navigator){
+  var swCode='self.addEventListener("install",function(e){self.skipWaiting()});self.addEventListener("activate",function(e){e.waitUntil(clients.claim())});self.addEventListener("fetch",function(e){e.respondWith(fetch(e.request).catch(function(){return new Response("Offline - please reconnect",{headers:{"Content-Type":"text/plain"}})}))});';
+  var swBlob=new Blob([swCode],{type:'application/javascript'});
+  var swURL=URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swURL).catch(function(){})
 }
 
-function startVoice(target) {
-  if(!SpeechRecognition) {
-    alert('Voice recognition is not supported in this browser. Please use Chrome or Samsung Internet.');
-    return;
-  }
-  if(isRecording) {
-    stopVoice();
-    return;
-  }
-  recognition = initSpeech();
-  if(!recognition) return;
-  voiceTarget = target;
-  isRecording = true;
+/* === NOTIFICATIONS === */
+function initNotifications(){if(!('Notification' in window))return;if(Notification.permission==='default')Notification.requestPermission();setInterval(checkReminders,60000);checkReminders()}
+function checkReminders(){if(!('Notification' in window)||Notification.permission!=='granted')return;var now=new Date();var nowStr=todayStr();var nowMin=now.getHours()*60+now.getMinutes();
+  state.events.forEach(function(ev){if(ev.date!==nowStr)return;var p=ev.time.split(':');var evMin=(+p[0])*60+(+p[1]);var diff=evMin-nowMin;
+    if(diff>=9&&diff<=10){var nk='sage_n_'+ev.id+'_'+nowStr;if(!localStorage.getItem(nk)){localStorage.setItem(nk,'1');new Notification('Sage Reminder',{body:ev.title+' in 10 minutes ('+fmtTime(ev.time)+')'})}}
+  })}
 
-  if(target === 'chat') {
-    const btn = document.getElementById('voiceBtn');
-    if(btn) btn.classList.add('recording');
-  } else {
-    const overlay = document.getElementById('voiceOverlay');
-    const txt = document.getElementById('voiceOverlayText');
-    if(overlay) overlay.classList.add('active');
-    if(txt) txt.textContent = 'Listening...';
-  }
+/* === RECURRING === */
+function generateRecurring(){var nowStr=todayStr();
+  state.events.forEach(function(ev){if(ev.repeat==='none'||!ev.repeat||ev.date>nowStr)return;
+    var hasNext=state.events.some(function(e){return e.parentId===ev.id&&e.date>nowStr});if(hasNext)return;
+    var d=new Date(ev.date+'T12:00');var next;
+    if(ev.repeat==='daily'){next=new Date(d);next.setDate(d.getDate()+1)}
+    else if(ev.repeat==='weekly'){next=new Date(d);next.setDate(d.getDate()+7)}
+    else if(ev.repeat==='monthly'){next=new Date(d);next.setMonth(d.getMonth()+1)}
+    if(next){var ns=next.toISOString().split('T')[0];if(ns>=nowStr){state.events.push({id:uid(),title:ev.title,date:ns,time:ev.time,duration:ev.duration,note:ev.note,repeat:ev.repeat,parentId:ev.id});save()}}
+  })}
 
-  try { recognition.start(); } catch(e) { stopVoice(); }
+/* === ICS CALENDAR EXPORT === */
+function exportICS(ev){
+  var dtStart=ev.date.replace(/-/g,'')+'T'+ev.time.replace(':','')+'00';
+  var endDate=new Date(ev.date+'T'+ev.time);endDate.setMinutes(endDate.getMinutes()+ev.duration);
+  var dtEnd=endDate.toISOString().replace(/[-:]/g,'').split('.')[0];
+  var rrule='';if(ev.repeat==='daily')rrule='\nRRULE:FREQ=DAILY';else if(ev.repeat==='weekly')rrule='\nRRULE:FREQ=WEEKLY';else if(ev.repeat==='monthly')rrule='\nRRULE:FREQ=MONTHLY';
+  var ics='BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Sage//EN\nBEGIN:VEVENT\nDTSTART:'+dtStart+'\nDTEND:'+dtEnd+rrule+'\nSUMMARY:'+ev.title+'\nDESCRIPTION:'+(ev.note||'')+'\nEND:VEVENT\nEND:VCALENDAR';
+  var blob=new Blob([ics],{type:'text/calendar'});var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=ev.title.replace(/\s+/g,'_')+'.ics';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url)
 }
 
-function stopVoice() {
-  if(recognition) { try { recognition.stop(); } catch(e){} }
-  isRecording = false;
-  const btn = document.getElementById('voiceBtn');
-  if(btn) btn.classList.remove('recording');
-  const overlay = document.getElementById('voiceOverlay');
-  if(overlay) overlay.classList.remove('active');
+/* === GLOBAL SEARCH === */
+function globalSearch(q){if(!q||q.length<2)return[];var ql=q.toLowerCase();var r=[];
+  state.tasks.forEach(function(t){if(t.title.toLowerCase().indexOf(ql)>=0)r.push({type:'task',item:t,text:t.title,sub:(t.done?'Done':'Pending')+' - '+t.priority})});
+  state.notes.forEach(function(n){if(n.title.toLowerCase().indexOf(ql)>=0||n.body.toLowerCase().indexOf(ql)>=0)r.push({type:'note',item:n,text:n.title,sub:n.body.slice(0,60)})});
+  state.events.forEach(function(e){if(e.title.toLowerCase().indexOf(ql)>=0)r.push({type:'event',item:e,text:e.title,sub:fmtDate(e.date)+' '+fmtTime(e.time)})});
+  return r.slice(0,8)}
+
+/* === EDIT MODAL === */
+function openEditTask(id){
+  var t=state.tasks.find(function(x){return x.id===id});if(!t)return;
+  var mc=document.getElementById('editModalContent');
+  mc.innerHTML='<div style="font-size:20px;font-weight:600;margin-bottom:16px">Edit Task</div>'+
+    '<input class="input" id="editTitle" value="'+esc(t.title)+'" style="margin-bottom:10px">'+
+    '<div class="row gap-8" style="flex-wrap:wrap;margin-bottom:10px">'+['high','medium','low'].map(function(p){return'<button class="priority-btn" id="ep_'+p+'" style="border:1px solid var(--'+p+');color:var(--'+p+');'+(t.priority===p?'background:color-mix(in srgb,var(--'+p+') 15%,transparent)':'')+'" onclick="document.getElementById(\'editPriority\').value=\''+p+'\'">'+p+'</button>'}).join('')+'<input type="hidden" id="editPriority" value="'+t.priority+'"></div>'+
+    '<div class="row gap-8" style="margin-bottom:10px"><input type="date" class="input-sm" id="editDate" value="'+t.dueDate+'"><select class="input-sm" id="editCat">'+CATEGORIES.map(function(c){return'<option'+(t.category===c?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div>'+
+    '<div class="row gap-8"><button class="btn-primary" style="flex:1" onclick="saveEditTask(\''+id+'\')">Save</button><button class="btn-secondary" style="flex:1" onclick="closeModal()">Cancel</button></div>';
+  document.getElementById('editModal').classList.add('active');
+}
+function saveEditTask(id){var t=state.tasks.find(function(x){return x.id===id});if(!t)return;
+  t.title=document.getElementById('editTitle').value.trim()||t.title;t.priority=document.getElementById('editPriority').value;t.dueDate=document.getElementById('editDate').value;t.category=document.getElementById('editCat').value;
+  save();closeModal();render()}
+function openEditEvent(id){
+  var ev=state.events.find(function(x){return x.id===id});if(!ev)return;
+  var mc=document.getElementById('editModalContent');
+  mc.innerHTML='<div style="font-size:20px;font-weight:600;margin-bottom:16px">Edit Event</div>'+
+    '<input class="input" id="editEvTitle" value="'+esc(ev.title)+'" style="margin-bottom:10px">'+
+    '<div class="row gap-8" style="flex-wrap:wrap;margin-bottom:10px"><input type="date" class="input-sm" id="editEvDate" value="'+ev.date+'"><input type="time" class="input-sm" id="editEvTime" value="'+ev.time+'"><select class="input-sm" id="editEvDur"><option value="15"'+(ev.duration===15?' selected':'')+'>15 min</option><option value="30"'+(ev.duration===30?' selected':'')+'>30 min</option><option value="60"'+(ev.duration===60?' selected':'')+'>1 hr</option><option value="90"'+(ev.duration===90?' selected':'')+'>1.5 hr</option><option value="120"'+(ev.duration===120?' selected':'')+'>2 hr</option></select><select class="input-sm" id="editEvRepeat"><option value="none"'+(ev.repeat==='none'?' selected':'')+'>No repeat</option><option value="daily"'+(ev.repeat==='daily'?' selected':'')+'>Daily</option><option value="weekly"'+(ev.repeat==='weekly'?' selected':'')+'>Weekly</option><option value="monthly"'+(ev.repeat==='monthly'?' selected':'')+'>Monthly</option></select></div>'+
+    '<input class="input" id="editEvNote" value="'+esc(ev.note||'')+'" placeholder="Notes" style="margin-bottom:12px;font-size:16px">'+
+    '<div class="row gap-8"><button class="btn-primary" style="flex:1" onclick="saveEditEvent(\''+id+'\')">Save</button><button class="btn-secondary" style="flex:1" onclick="closeModal()">Cancel</button></div>';
+  document.getElementById('editModal').classList.add('active');
+}
+function saveEditEvent(id){var ev=state.events.find(function(x){return x.id===id});if(!ev)return;
+  ev.title=document.getElementById('editEvTitle').value.trim()||ev.title;ev.date=document.getElementById('editEvDate').value;ev.time=document.getElementById('editEvTime').value;ev.duration=+document.getElementById('editEvDur').value;ev.repeat=document.getElementById('editEvRepeat').value;ev.note=document.getElementById('editEvNote').value;
+  save();closeModal();render()}
+function closeModal(){document.getElementById('editModal').classList.remove('active')}
+document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+/* === VOICE === */
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var recognition=null,isRecording=false,voiceTarget=null;
+function initSpeech(){if(!SR)return null;var r=new SR();r.continuous=false;r.interimResults=true;r.lang='en-US';
+  r.onresult=function(e){var t='';for(var i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;
+    if(voiceTarget==='chat'){var inp=document.getElementById('chatInput');if(inp)inp.value=t}else{var txt=document.getElementById('voiceOverlayText');if(txt)txt.textContent=t||'Listening...'}
+    if(e.results[e.results.length-1].isFinal){if(voiceTarget==='chat'){var inp2=document.getElementById('chatInput');if(inp2)inp2.value=t}else{processVoiceCommand(t)}}};
+  r.onend=function(){isRecording=false;updateVoiceUI()};r.onerror=function(){isRecording=false;updateVoiceUI()};return r}
+function updateVoiceUI(){var b=document.getElementById('voiceBtn');if(b){if(isRecording)b.classList.add('recording');else b.classList.remove('recording')}var o=document.getElementById('voiceOverlay');if(o){if(isRecording&&voiceTarget!=='chat')o.classList.add('active');else o.classList.remove('active')}}
+function startVoice(target){if(!SR){alert('Voice not supported. Use Chrome.');return}if(isRecording){stopVoice();return}recognition=initSpeech();if(!recognition)return;voiceTarget=target;isRecording=true;updateVoiceUI();var txt=document.getElementById('voiceOverlayText');if(txt)txt.textContent='Listening...';try{recognition.start()}catch(e){stopVoice()}}
+function stopVoice(){if(recognition)try{recognition.stop()}catch(e){}isRecording=false;updateVoiceUI()}
+function processVoiceCommand(text){var lower=text.toLowerCase().trim();
+  if(lower.startsWith('add task')||lower.startsWith('new task')){var ti=text.replace(/^(add|new)\s*task\s*/i,'').trim();if(ti){state.tasks.push({id:uid(),title:ti,priority:'medium',dueDate:todayStr(),done:false,starred:false,category:'General'});save();render();return}}
+  if(lower.startsWith('add event')||lower.startsWith('new event')||lower.startsWith('schedule')){var t2=text.replace(/^(add|new)\s*event\s*|^schedule\s*/i,'').trim();if(t2){state.events.push({id:uid(),title:t2,date:todayStr(),time:'09:00',duration:60,note:'',repeat:'none'});save();render();return}}
+  if(lower.startsWith('add note')||lower.startsWith('new note')||lower.startsWith('note')){var t3=text.replace(/^(add|new)?\s*note\s*/i,'').trim();state.notes.unshift({id:uid(),title:t3||'Voice Note',body:'',color:'#9E7C2B'});save();render();return}
+  state.tab='chat';document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab==='chat')});state.chatMessages.push({role:'user',content:text});state.chatLoading=true;save();render();sendChatAPI()}
+
+/* === RENDER === */
+var $content=document.getElementById('content');
+function switchTab(tab){state.tab=tab;state.searchQuery='';document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===tab)});render()}
+function render(){var fn={home:renderHome,tasks:renderTasks,notes:renderNotes,schedule:renderSchedule,chat:renderChat,settings:renderSettings};$content.innerHTML='';var w=document.createElement('div');w.style.cssText='display:flex;flex-direction:column;height:100%';w.innerHTML=fn[state.tab]();$content.appendChild(w);if(state.tab==='chat'){var a=document.getElementById('chatArea');if(a)a.scrollTop=a.scrollHeight}}
+
+/* === HOME === */
+function renderHome(){
+  var pending=state.tasks.filter(function(t){return!t.done});var overdue=pending.filter(function(t){return isOverdue(t.dueDate)});
+  var todayEv=state.events.filter(function(e){return e.date===todayStr()});
+  var dateStr=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  var prO={high:0,medium:1,low:2};var top3=[].concat(pending).sort(function(a,b){return prO[a.priority]-prO[b.priority]}).slice(0,3);
+  var sr=globalSearch(state.searchQuery);var searchHTML='';
+  if(state.searchQuery&&sr.length>0){searchHTML='<div class="search-results">'+sr.map(function(r){var badge='',color='';if(r.type==='task'){badge='Task';color='var(--medium)'}else if(r.type==='note'){badge='Note';color='var(--low)'}else{badge='Event';color='var(--accent)'}var action='';if(r.type==='task')action='switchTab("tasks")';else if(r.type==='note')action='state.activeNote="'+r.item.id+'";switchTab("notes")';else action='switchTab("schedule")';return'<div class="search-result" onclick="'+action+'"><span class="search-badge" style="color:'+color+';background:'+color+'15">'+badge+'</span><div class="flex-1" style="min-width:0"><div class="truncate" style="font-size:16px">'+esc(r.text)+'</div><div style="font-size:14px;color:var(--textDim)">'+esc(r.sub)+'</div></div></div>'}).join('')+'</div>'}
+  else if(state.searchQuery){searchHTML='<div style="text-align:center;padding:20px;color:var(--textDim);font-size:15px">No results</div>'}
+  var briefH='';
+  if(state.briefingLoading)briefH='<div class="briefing-card"><div style="font-size:16px;color:var(--accent);font-weight:500"><span class="typing">Preparing briefing</span></div></div>';
+  else if(state.briefing)briefH='<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--accent)"><div style="font-size:14px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Today\'s Briefing</div><div style="font-size:16px;line-height:1.7;white-space:pre-wrap">'+esc(state.briefing)+'</div><button onclick="state.briefing=null;render()" style="background:none;border:none;color:var(--textDim);font-size:13px;cursor:pointer;margin-top:8px;text-decoration:underline">Dismiss</button></div>';
+  var overdueH='';
+  if(overdue.length>0)overdueH='<div class="card overdue" style="padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px"><div style="color:var(--danger)"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div><div style="flex:1"><div style="font-size:16px;font-weight:600;color:var(--danger)">'+overdue.length+' overdue task'+(overdue.length>1?'s':'')+'</div><div style="font-size:14px;color:var(--textMuted)">'+overdue.map(function(t){return esc(t.title)}).join(', ')+'</div></div></div>';
+  return '<div style="margin-bottom:20px"><div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">'+dateStr+'</div><div class="section-title" style="font-size:36px">'+greeting()+', <span style="color:var(--accent)">Rafik</span></div><p style="font-size:17px;color:var(--textMuted);margin-top:6px">Here\'s your overview for today.</p></div>'+
+  '<div class="row gap-8" style="margin-bottom:14px"><div style="flex:1;position:relative"><input class="input" placeholder="Search tasks, notes, events..." value="'+esc(state.searchQuery)+'" oninput="state.searchQuery=this.value;render()" style="padding-left:44px"><div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--textDim)">'+searchSVG+'</div></div></div>'+searchHTML+
+  (state.searchQuery?'':
+  overdueH+
+  '<div class="row gap-8" style="margin-bottom:14px"><div class="briefing-card" style="flex:1" onclick="requestBriefing()"><div class="row gap-8"><div style="width:42px;height:42px;border-radius:10px;background:var(--accentSoft);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3H12m7.5-9v9a3 3 0 01-3 3h-9a3 3 0 01-3-3V6.75a3 3 0 013-3h2.25m8.25 0V3.75a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V6h4.5z"/></svg></div><div><div style="font-size:16px;font-weight:500">Today\'s Briefing</div><div style="font-size:14px;color:var(--textDim)">AI daily summary</div></div></div></div><div onclick="startVoice(\'overlay\')" style="width:60px;background:var(--surface);border:1px solid var(--borderLight);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:8px 0"><div style="color:var(--accent)"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg></div><div style="font-size:11px;color:var(--textDim)">Voice</div></div></div>'+briefH+
+  '<div class="stat-grid"><div class="stat-card" onclick="switchTab(\'tasks\')"><div class="stat-value" style="color:var(--medium)">'+pending.length+'</div><div class="stat-label">Pending</div></div><div class="stat-card" onclick="switchTab(\'schedule\')"><div class="stat-value" style="color:var(--accent)">'+todayEv.length+'</div><div class="stat-label">Today</div></div><div class="stat-card" onclick="switchTab(\'tasks\')"><div class="stat-value" style="color:var(--success)">'+state.tasks.filter(function(t){return t.done}).length+'</div><div class="stat-label">Done</div></div></div>'+
+  (top3.length?'<div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Priority Tasks</div>'+top3.map(function(t){return'<div class="card row gap-8'+(isOverdue(t.dueDate)&&!t.done?' overdue':'')+'"><span style="width:10px;height:10px;border-radius:50%;background:var(--'+t.priority+');flex-shrink:0"></span><span class="flex-1 truncate" style="font-size:17px">'+esc(t.title)+'</span><span style="font-size:15px;color:'+(isOverdue(t.dueDate)?'var(--danger)':'var(--textDim)')+';flex-shrink:0">'+fmtDate(t.dueDate)+'</span></div>'}).join(''):'')+
+  (todayEv.length?'<div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px">Today\'s Schedule</div>'+todayEv.map(function(e){return'<div class="card row gap-8"><span style="min-width:60px;font-size:16px;font-weight:600;color:var(--accent)">'+fmtTime(e.time)+'</span><span style="font-size:17px">'+esc(e.title)+'</span></div>'}).join(''):''));
 }
 
-// ── Settings ───────────────────────────────────────────
-function renderSettings() {
-  const savedKey = localStorage.getItem('sage_api_key') || '';
-  const masked = savedKey ? savedKey.slice(0,10) + '...' + savedKey.slice(-4) : '';
-  return `
-    <div class="section-title" style="margin-bottom:20px">Settings</div>
-
-    <div class="card" style="padding:20px">
-      <div style="font-size:18px;font-weight:600;margin-bottom:4px;color:var(--text)">Anthropic API Key</div>
-      <div style="font-size:18px;color:var(--textMuted);margin-bottom:14px;line-height:1.5">
-        Required for Sage AI chat. Get your key at
-        <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--accent);text-decoration:none"> console.anthropic.com</a>
-      </div>
-      ${savedKey ? `
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <div style="flex:1;background:var(--surfaceHover);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:monospace;font-size:18px;color:var(--success)">${masked}</div>
-          <button onclick="localStorage.removeItem('sage_api_key');render()" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:18px;cursor:pointer">Remove</button>
-        </div>
-        <div style="font-size:18px;color:var(--success)">✓ API key saved — Sage chat is active</div>
-      ` : `
-        <input class="input" id="apiKeyInput" type="password" placeholder="sk-ant-..." style="margin-bottom:10px;font-family:monospace;font-size:16px">
-        <button onclick="saveApiKey()" class="btn-primary" style="width:100%">Save API Key</button>
-        <div style="font-size:14px;color:var(--textDim);margin-top:10px;line-height:1.5">
-          Your key is stored locally on this device only. It is never sent anywhere except directly to Anthropic's API.
-        </div>
-      `}
-    </div>
-
-    <div class="card" style="padding:20px;margin-top:12px">
-      <div style="font-size:18px;font-weight:600;margin-bottom:4px;color:var(--text)">How to get an API key</div>
-      <div style="font-size:16px;color:var(--textMuted);line-height:1.7">
-        1. Go to <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent);text-decoration:none">console.anthropic.com</a><br>
-        2. Sign in or create a free account<br>
-        3. Click <b style="color:var(--text)">API Keys</b> in the sidebar<br>
-        4. Click <b style="color:var(--text)">Create Key</b><br>
-        5. Copy the key and paste it above
-      </div>
-    </div>
-
-    <div class="card" style="padding:20px;margin-top:12px">
-      <div style="font-size:18px;font-weight:600;margin-bottom:4px;color:var(--text)">Clear All Data</div>
-      <div style="font-size:18px;color:var(--textMuted);margin-bottom:12px">Reset tasks, notes, events, and chat history.</div>
-      <button onclick="if(confirm('Are you sure? This will delete all your Sage data on this device.')){localStorage.clear();location.reload()}" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:18px;cursor:pointer">Clear Data</button>
-    </div>
-  `;
+/* === AI BRIEFING === */
+function requestBriefing(){
+  var apiKey=localStorage.getItem('sage_api_key');if(!apiKey){alert('Add your API key in Settings first.');return}
+  state.briefingLoading=true;render();
+  var p=state.tasks.filter(function(t){return!t.done}).map(function(t){return t.title+' ('+t.priority+', due '+t.dueDate+(isOverdue(t.dueDate)?', OVERDUE':'')+')'}).join('; ');
+  var te=state.events.filter(function(e){return e.date===todayStr()}).map(function(e){return e.title+' at '+e.time}).join('; ');
+  var ue=state.events.filter(function(e){var w=new Date(Date.now()+7*86400000).toISOString().split('T')[0];return e.date>todayStr()&&e.date<=w}).map(function(e){return e.title+' '+fmtDate(e.date)+' '+fmtTime(e.time)}).join('; ');
+  var prompt="Morning briefing for Rafik (max 150 words). Today: "+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+".\n1. Today's schedule: "+(te||'Clear')+" \n2. Tasks: "+(p||'All clear')+"\n3. This week: "+(ue||'Nothing')+"\nBe warm, professional. Bullet points. End with motivation.";
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:'You are Sage, secretary to Rafik Gabriel, Chairman of Metal Tube (steel, Egypt).',messages:[{role:'user',content:prompt}]})}).then(function(r){return r.json()}).then(function(data){
+    state.briefing=data.content?data.content.map(function(b){return b.text||''}).join('\n'):'Could not generate.';state.briefingLoading=false;render()
+  }).catch(function(){state.briefing='Connection error.';state.briefingLoading=false;render()})
 }
 
-function saveApiKey() {
-  const input = document.getElementById('apiKeyInput');
-  const key = input?.value?.trim();
-  if(!key) return;
-  if(!key.startsWith('sk-ant-')) {
-    alert('Invalid key format. It should start with sk-ant-');
-    return;
-  }
-  localStorage.setItem('sage_api_key', key);
-  render();
+/* === TASKS === */
+function renderTasks(){
+  var pending=state.tasks.filter(function(t){return!t.done});var doneCount=state.tasks.filter(function(t){return t.done}).length;
+  var prO={high:0,medium:1,low:2};var f=state.taskFilter;
+  var filtered=state.tasks;
+  if(f==='active')filtered=filtered.filter(function(t){return!t.done});
+  else if(f==='done')filtered=filtered.filter(function(t){return t.done});
+  else if(f==='overdue')filtered=filtered.filter(function(t){return!t.done&&isOverdue(t.dueDate)});
+  else if(f==='starred')filtered=filtered.filter(function(t){return t.starred&&!t.done});
+  var sorted=[].concat(filtered).sort(function(a,b){if(a.done!==b.done)return a.done?1:-1;if(a.starred!==b.starred)return b.starred?1:-1;return prO[a.priority]-prO[b.priority]});
+  var h='<div class="row-between" style="margin-bottom:16px"><div><div class="section-title">Tasks</div><div style="font-size:16px;color:var(--textMuted)">'+pending.length+' pending</div></div><div class="row gap-8"><button class="btn-icon" style="background:var(--surfaceHover);color:var(--textMuted)" onclick="startVoice(\'overlay\')">'+micSVG+'</button><button class="btn-icon" onclick="state.addingTask=!state.addingTask;render()">'+plusSVG+'</button></div></div>';
+  // Filters
+  h+='<div class="row gap-6" style="margin-bottom:14px;flex-wrap:wrap">';
+  ['all','active','starred','overdue','done'].forEach(function(ft){h+='<button class="filter-btn'+(f===ft?' active':'')+'" onclick="state.taskFilter=\''+ft+'\';render()">'+ft.charAt(0).toUpperCase()+ft.slice(1)+'</button>'});
+  h+='</div>';
+  if(state.addingTask){h+='<div class="form-panel"><input class="input" id="taskTitle" placeholder="What needs to be done?" onkeydown="if(event.key===\'Enter\')addTask()" style="margin-bottom:10px"><div class="row gap-8" style="flex-wrap:wrap;margin-bottom:8px">'+['high','medium','low'].map(function(p){return'<button class="priority-btn" style="border:1px solid var(--'+p+');color:var(--'+p+')" onclick="document.getElementById(\'taskPriority\').value=\''+p+'\'">'+p+'</button>'}).join('')+'<input type="hidden" id="taskPriority" value="medium"></div><div class="row gap-8" style="flex-wrap:wrap"><input type="date" class="input-sm" id="taskDate" value="'+todayStr()+'"><select class="input-sm" id="taskCat">'+CATEGORIES.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select><button class="btn-primary" onclick="addTask()" style="margin-left:auto">Add</button></div></div>'}
+  h+='<div style="flex:1;overflow-y:auto">';
+  if(sorted.length===0)h+='<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">'+(f==='all'?'No tasks yet.':'No '+f+' tasks.')+'</div>';
+  sorted.forEach(function(t){var od=!t.done&&isOverdue(t.dueDate);h+='<div class="card row gap-8'+(od?' overdue':'')+'" style="opacity:'+(t.done?.5:1)+'"><button class="checkbox '+(t.done?'done':'')+'" onclick="toggleTask(\''+t.id+'\')">'+(t.done?checkSVG:'')+'</button><div class="flex-1" style="min-width:0"><div class="truncate" style="font-size:17px;'+(t.done?'text-decoration:line-through':'')+'">'+esc(t.title)+'</div><div class="row gap-6" style="margin-top:5px;flex-wrap:wrap"><span class="pill" style="color:var(--'+t.priority+');background:color-mix(in srgb,var(--'+t.priority+') 12%,transparent)">'+t.priority+'</span>'+(t.category&&t.category!=='General'?'<span class="cat-pill">'+esc(t.category)+'</span>':'')+'<span style="font-size:14px;color:'+(od?'var(--danger)':'var(--textDim)')+'">'+fmtDate(t.dueDate)+(od?' (overdue)':'')+'</span></div></div><button class="icon-btn-sm" style="color:'+(t.starred?'var(--accent)':'var(--textDim)')+';opacity:'+(t.starred?1:.4)+'" onclick="toggleStar(\''+t.id+'\')">'+starSVG+'</button><button class="icon-btn-sm" onclick="openEditTask(\''+t.id+'\')">'+editSVG+'</button><button class="icon-btn-sm" onclick="removeTask(\''+t.id+'\')">'+trashSVG+'</button></div>'});
+  h+='</div>';
+  if(doneCount>0&&f!=='done')h+='<div style="margin-top:12px;text-align:center"><button onclick="clearDone()" class="btn-sm">Clear '+doneCount+' completed task'+(doneCount>1?'s':'')+'</button></div>';
+  return h;
+}
+function addTask(){var t=document.getElementById('taskTitle');if(!t||!t.value.trim())return;state.tasks.push({id:uid(),title:t.value.trim(),priority:(document.getElementById('taskPriority')||{}).value||'medium',dueDate:(document.getElementById('taskDate')||{}).value||todayStr(),done:false,starred:false,category:(document.getElementById('taskCat')||{}).value||'General'});state.addingTask=false;save();render()}
+function toggleTask(id){var t=state.tasks.find(function(x){return x.id===id});if(t)t.done=!t.done;save();render()}
+function toggleStar(id){var t=state.tasks.find(function(x){return x.id===id});if(t)t.starred=!t.starred;save();render()}
+function removeTask(id){state.tasks=state.tasks.filter(function(x){return x.id!==id});save();render()}
+function clearDone(){state.tasks=state.tasks.filter(function(t){return!t.done});save();render()}
+
+/* === NOTES === */
+function renderNotes(){
+  var an=state.notes.find(function(n){return n.id===state.activeNote});
+  var h='<div class="row-between" style="margin-bottom:16px">';
+  if(an)h+='<button class="icon-btn-sm" style="opacity:1;color:var(--textMuted)" onclick="state.activeNote=null;save();render()"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M15 19l-7-7 7-7"/></svg></button>';
+  h+='<div class="section-title" style="flex:1">'+(an?'':'Notes')+'</div>';
+  if(!an)h+='<button class="btn-icon" onclick="addNote()">'+plusSVG+'</button>';
+  else h+='<button class="icon-btn-sm" style="opacity:1;color:var(--danger)" onclick="removeNote(\''+an.id+'\')">'+trashSVG+'</button>';
+  h+='</div>';
+  if(!an){if(state.notes.length===0)h+='<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No notes yet.</div>';
+    else state.notes.forEach(function(n){h+='<div class="note-item" onclick="state.activeNote=\''+n.id+'\';render()"><div class="note-bar" style="background:'+n.color+'"></div><div class="truncate" style="font-size:17px;font-weight:500;padding-left:8px">'+esc(n.title||'Untitled')+'</div><div class="truncate" style="font-size:15px;color:var(--textDim);margin-top:4px;padding-left:8px">'+esc((n.body||'').slice(0,80)||'Empty note')+'</div></div>'})}
+  else{h+='<input class="input" value="'+esc(an.title)+'" onchange="updateNote(\''+an.id+'\',\'title\',this.value)" style="background:transparent;border:none;font-family:Playfair Display,serif;font-size:24px;font-weight:600;padding:0;margin-bottom:14px"><textarea class="note-editor" style="flex:1" oninput="updateNote(\''+an.id+'\',\'body\',this.value)" placeholder="Start typing...">'+esc(an.body)+'</textarea>'}
+  return h;
+}
+function addNote(){var colors=['#9E7C2B','#2670A0','#B83220','#7B5EA7','#2E7D53'];state.notes.unshift({id:uid(),title:'Untitled Note',body:'',color:colors[Math.floor(Math.random()*5)]});state.activeNote=state.notes[0].id;save();render()}
+function updateNote(id,field,val){var n=state.notes.find(function(x){return x.id===id});if(n)n[field]=val;save()}
+function removeNote(id){state.notes=state.notes.filter(function(x){return x.id!==id});state.activeNote=null;save();render()}
+
+/* === SCHEDULE === */
+function renderSchedule(){
+  var sorted=[].concat(state.events).sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)});
+  var grouped={};sorted.forEach(function(e){if(!grouped[e.date])grouped[e.date]=[];grouped[e.date].push(e)});
+  var upcoming=Object.keys(grouped).filter(function(d){return d>=todayStr()}).sort();
+  var past=Object.keys(grouped).filter(function(d){return d<todayStr()}).sort().reverse();
+  var h='<div class="row-between" style="margin-bottom:20px"><div><div class="section-title">Schedule</div><div style="font-size:16px;color:var(--textMuted)">'+state.events.filter(function(e){return e.date>=todayStr()}).length+' upcoming</div></div><div class="row gap-8"><button class="btn-icon" style="background:var(--surfaceHover);color:var(--textMuted)" onclick="startVoice(\'overlay\')">'+micSVG+'</button><button class="btn-icon" onclick="state.addingEvent=!state.addingEvent;render()">'+plusSVG+'</button></div></div>';
+  if(state.addingEvent)h+='<div class="form-panel"><input class="input" id="evTitle" placeholder="Event title" onkeydown="if(event.key===\'Enter\')addEvent()" style="margin-bottom:10px"><div class="row gap-8" style="flex-wrap:wrap"><input type="date" class="input-sm" id="evDate" value="'+todayStr()+'"><input type="time" class="input-sm" id="evTime" value="09:00"><select class="input-sm" id="evDuration"><option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>1 hr</option><option value="90">1.5 hr</option><option value="120">2 hr</option></select><select class="input-sm" id="evRepeat"><option value="none">No repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select><button class="btn-primary" onclick="addEvent()" style="margin-left:auto">Add</button></div><input class="input" id="evNote" placeholder="Notes (optional)" style="font-size:16px;margin-top:10px"></div>';
+  h+='<div style="flex:1;overflow-y:auto">';
+  if(upcoming.length===0&&past.length===0)h+='<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No events scheduled.</div>';
+  upcoming.forEach(function(date){h+='<div style="margin-bottom:20px"><div style="font-size:14px;font-weight:600;color:'+(date===todayStr()?'var(--accent)':'var(--textMuted)')+';text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">'+(date===todayStr()?'Today':fmtDate(date))+'</div>';grouped[date].forEach(function(ev){h+='<div class="card row gap-8" style="align-items:flex-start"><span style="min-width:60px;font-size:16px;font-weight:600;color:var(--accent)">'+fmtTime(ev.time)+'</span><div class="flex-1"><div style="font-size:17px">'+esc(ev.title)+(ev.repeat&&ev.repeat!=='none'?' <span style="font-size:13px;color:var(--textDim)">&#x1F501; '+ev.repeat+'</span>':'')+'</div><div style="font-size:15px;color:var(--textDim);margin-top:2px">'+ev.duration+' min'+(ev.note?' - '+esc(ev.note):'')+'</div></div><button class="icon-btn-sm" onclick="exportICS(state.events.find(function(e){return e.id===\''+ev.id+'\'}))" title="Add to Calendar">'+calSVG+'</button><button class="icon-btn-sm" onclick="openEditEvent(\''+ev.id+'\')">'+editSVG+'</button><button class="icon-btn-sm" onclick="removeEvent(\''+ev.id+'\')">'+trashSVG+'</button></div>'});h+='</div>'});
+  if(past.length)h+='<div style="font-size:14px;color:var(--textDim);text-transform:uppercase;letter-spacing:1px;margin:10px 0 8px;border-top:1px solid var(--border);padding-top:14px">Past</div>';
+  past.forEach(function(date){h+='<div style="margin-bottom:12px;opacity:.5"><div style="font-size:14px;color:var(--textDim);margin-bottom:6px">'+fmtDate(date)+'</div>';grouped[date].forEach(function(ev){h+='<div class="card row gap-8" style="padding:12px 16px"><span style="min-width:60px;font-size:15px;color:var(--textDim)">'+fmtTime(ev.time)+'</span><span style="font-size:16px;color:var(--textMuted)">'+esc(ev.title)+'</span></div>'});h+='</div>'});
+  h+='</div>';return h;
+}
+function addEvent(){var t=document.getElementById('evTitle');if(!t||!t.value.trim())return;state.events.push({id:uid(),title:t.value.trim(),date:document.getElementById('evDate').value,time:document.getElementById('evTime').value,duration:+document.getElementById('evDuration').value,note:(document.getElementById('evNote')||{}).value||'',repeat:(document.getElementById('evRepeat')||{}).value||'none'});state.addingEvent=false;save();render()}
+function removeEvent(id){state.events=state.events.filter(function(x){return x.id!==id});save();render()}
+
+/* === CHAT === */
+function renderChat(){
+  var h='<div class="row-between" style="margin-bottom:16px"><div class="section-title">Sage</div><div class="row gap-8"><button class="btn-sm" onclick="state.chatMessages=[{role:\'assistant\',content:\'Chat cleared. How can I help?\'}];save();render()">Clear chat</button><span style="font-size:15px;color:var(--textDim)">AI Secretary</span></div></div><div id="chatArea" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px">';
+  state.chatMessages.forEach(function(m){h+='<div class="msg '+(m.role==='user'?'msg-user':'msg-ai')+'">'+esc(m.content)+'</div>'});
+  if(state.chatLoading)h+='<div class="msg msg-ai"><span class="typing">Thinking</span></div>';
+  h+='</div><div class="chat-input-row"><input class="input" id="chatInput" placeholder="Ask Sage anything..." onkeydown="if(event.key===\'Enter\'&&!event.shiftKey)sendChat()" style="flex:1"><button class="voice-btn '+(isRecording&&voiceTarget==='chat'?'recording':'')+'" id="voiceBtn" onclick="startVoice(\'chat\')"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg></button><button class="send-btn" style="background:var(--accentSoft);color:var(--accent)" onclick="sendChat()"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-4-4l4 4-4 4"/></svg></button></div>';
+  return h;
+}
+function sendChat(){var inp=document.getElementById('chatInput');var msg=inp?inp.value.trim():'';if(!msg||state.chatLoading)return;inp.value='';state.chatMessages.push({role:'user',content:msg});state.chatLoading=true;save();render();sendChatAPI()}
+function sendChatAPI(){
+  var apiKey=localStorage.getItem('sage_api_key');
+  if(!apiKey){state.chatMessages.push({role:'assistant',content:"I need an API key. Go to Settings and enter your Anthropic API key."});state.chatLoading=false;save();render();return}
+  var ctx='You are Sage, secretary to Rafik S. Gabriel, Chairman of Metal Tube (steel manufacturing, 10th of Ramadan, Egypt). 200+ employees. Sectors: Metal Projects, Scaffolding, Formwork, Storage, Sports Structures, Metal Arts. Currently pursuing ASME certification and hiring a BD Manager for MENA export expansion.\n\nActive tasks: '+state.tasks.filter(function(t){return!t.done}).map(function(t){return t.title+' ('+t.priority+(t.category!=='General'?', '+t.category:'')+', due '+t.dueDate+')'}).join('; ')+'\nUpcoming events: '+state.events.filter(function(e){return e.date>=todayStr()}).map(function(e){return e.title+' '+e.date+' '+e.time}).join('; ')+'\n\nBe professional, concise, proactive. Under 200 words unless more needed.';
+  var history=state.chatMessages.slice(-10).map(function(m){return{role:m.role,content:m.content}});
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:ctx,messages:history})}).then(function(r){return r.json()}).then(function(data){
+    if(data.error)state.chatMessages.push({role:'assistant',content:'Error: '+(data.error.message||'Check API key.')});
+    else{var reply=data.content?data.content.map(function(b){return b.text||''}).join('\n'):'Please try again.';state.chatMessages.push({role:'assistant',content:reply})}
+    state.chatLoading=false;save();render()
+  }).catch(function(){state.chatMessages.push({role:'assistant',content:'Connection error.'});state.chatLoading=false;save();render()})
 }
 
-// ── Voice command processing ───────────────────────────
-function processVoiceCommand(text) {
-  const lower = text.toLowerCase().trim();
-  // Quick add task
-  if(lower.startsWith('add task') || lower.startsWith('new task')) {
-    const title = text.replace(/^(add|new)\s*task\s*/i, '').trim();
-    if(title) {
-      state.tasks.push({id:uid(),title:title,priority:'medium',dueDate:todayStr(),done:false,starred:false});
-      render();
-      return;
-    }
-  }
-  // Quick add event
-  if(lower.startsWith('add event') || lower.startsWith('new event') || lower.startsWith('schedule')) {
-    const title = text.replace(/^(add|new)\s*event\s*|^schedule\s*/i, '').trim();
-    if(title) {
-      state.events.push({id:uid(),title:title,date:todayStr(),time:'09:00',duration:60,note:''});
-      render();
-      return;
-    }
-  }
-  // Quick add note
-  if(lower.startsWith('add note') || lower.startsWith('new note') || lower.startsWith('note')) {
-    const title = text.replace(/^(add|new)?\s*note\s*/i, '').trim();
-    const colors=['#C8A44E','#60A5FA','#F87171','#A78BFA','#34D399'];
-    state.notes.unshift({id:uid(),title:title||'Voice Note',body:'',color:colors[Math.floor(Math.random()*5)]});
-    render();
-    return;
-  }
-  // Default: switch to chat and send as message
-  state.tab = 'chat';
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab==='chat'));
-  state.chatMessages.push({role:'user',content:text});
-  state.chatLoading = true;
-  render();
-  sendChatAPI(text);
+/* === SETTINGS === */
+function renderSettings(){
+  var savedKey=localStorage.getItem('sage_api_key')||'';var masked=savedKey?savedKey.slice(0,10)+'...'+savedKey.slice(-4):'';
+  var notifStatus='Notification' in window?(Notification.permission==='granted'?'<span style="color:var(--success)">Enabled</span>':(Notification.permission==='denied'?'<span style="color:var(--danger)">Blocked</span>':'<span style="color:var(--medium)">Not set</span>')):'<span style="color:var(--textDim)">Not supported</span>';
+  var h='<div class="section-title" style="margin-bottom:20px">Settings</div>';
+  // API Key
+  h+='<div class="card" style="padding:20px"><div style="font-size:18px;font-weight:600;margin-bottom:6px">Anthropic API Key</div><div style="font-size:15px;color:var(--textMuted);margin-bottom:14px;line-height:1.5">Required for Sage AI. Get at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a></div>';
+  if(savedKey)h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="flex:1;background:var(--surfaceHover);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:monospace;font-size:15px;color:var(--success)">'+masked+'</div><button onclick="localStorage.removeItem(\'sage_api_key\');render()" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:10px 16px;font-size:15px;cursor:pointer">Remove</button></div><div style="font-size:15px;color:var(--success)">&#10003; Active</div>';
+  else h+='<input class="input" id="apiKeyInput" type="password" placeholder="sk-ant-..." style="margin-bottom:12px;font-family:monospace;font-size:16px"><button onclick="saveApiKey()" class="btn-primary" style="width:100%">Save API Key</button>';
+  h+='</div>';
+  // Notifications
+  h+='<div class="card" style="padding:20px;margin-top:12px"><div class="row-between"><div><div style="font-size:18px;font-weight:600;margin-bottom:4px">Notifications</div><div style="font-size:15px;color:var(--textMuted)">Reminders 10 min before events</div></div><div>'+notifStatus+'</div></div>';
+  if('Notification' in window&&Notification.permission==='default')h+='<button onclick="Notification.requestPermission().then(function(){render()})" class="btn-secondary" style="margin-top:12px;width:100%">Enable Notifications</button>';
+  h+='</div>';
+  // Sync
+  h+='<div class="card" style="padding:20px;margin-top:12px"><div style="font-size:18px;font-weight:600;margin-bottom:6px">Sync Between Devices</div><div style="font-size:15px;color:var(--textMuted);margin-bottom:14px;line-height:1.5">Export from one device, import on another.</div><div class="row gap-8"><button onclick="exportData()" class="btn-secondary" style="flex:1">Export</button><button onclick="document.getElementById(\'importFile\').click()" class="btn-secondary" style="flex:1">Import</button></div></div>';
+  // Stats
+  var totalTasks=state.tasks.length;var doneTasks=state.tasks.filter(function(t){return t.done}).length;var totalNotes=state.notes.length;var totalEvents=state.events.length;
+  h+='<div class="card" style="padding:20px;margin-top:12px"><div style="font-size:18px;font-weight:600;margin-bottom:10px">Your Data</div><div style="font-size:16px;color:var(--textMuted);line-height:2">Tasks: <b style="color:var(--text)">'+totalTasks+'</b> ('+doneTasks+' completed)<br>Notes: <b style="color:var(--text)">'+totalNotes+'</b><br>Events: <b style="color:var(--text)">'+totalEvents+'</b></div></div>';
+  // Clear
+  h+='<div class="card" style="padding:20px;margin-top:12px"><div style="font-size:18px;font-weight:600;margin-bottom:6px">Clear All Data</div><button onclick="if(confirm(\'Delete all Sage data?\')){localStorage.removeItem(\'sage_data\');state=loadState();render()}" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:10px 16px;font-size:15px;cursor:pointer">Clear Data</button></div>';
+  // Version
+  h+='<div style="text-align:center;margin-top:24px;color:var(--textDim);font-size:13px">Sage v4.0 — Built for Rafik S. Gabriel</div>';
+  return h;
 }
+function saveApiKey(){var k=(document.getElementById('apiKeyInput')||{}).value;if(!k)return;k=k.trim();if(k.indexOf('sk-ant-')!==0){alert('Invalid key. Should start with sk-ant-');return}localStorage.setItem('sage_api_key',k);render()}
+function exportData(){var data=JSON.stringify({tasks:state.tasks,notes:state.notes,events:state.events,chatMessages:state.chatMessages,exportDate:new Date().toISOString()},null,2);var blob=new Blob([data],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='sage-backup-'+todayStr()+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url)}
+function importData(input){var file=input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var data=JSON.parse(e.target.result);if(!data.tasks&&!data.notes&&!data.events){alert('Invalid file.');return}if(!confirm('Replace all current data?'))return;if(data.tasks)state.tasks=data.tasks;if(data.notes)state.notes=data.notes;if(data.events){data.events.forEach(function(ev){if(!ev.repeat)ev.repeat='none'});state.events=data.events}if(data.chatMessages)state.chatMessages=data.chatMessages;save();render();alert('Imported!')}catch(err){alert('Error reading file.')}};reader.readAsText(file);input.value=''}
 
-// Close voice overlay on tap
-document.getElementById('voiceOverlay').addEventListener('click', () => stopVoice());
-
-// ── Render ─────────────────────────────────────────────
-const $content = document.getElementById('content');
-
-function switchTab(tab) {
-  state.tab = tab;
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===tab));
-  render();
-}
-
-function render() {
-  const fn = {home:renderHome, tasks:renderTasks, notes:renderNotes, schedule:renderSchedule, chat:renderChat, settings:renderSettings};
-  $content.innerHTML = '';
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:flex;flex-direction:column;height:100%;';
-  wrap.innerHTML = fn[state.tab]();
-  $content.appendChild(wrap);
-  if(state.tab==='chat') {
-    const area = document.getElementById('chatArea');
-    if(area) area.scrollTop = area.scrollHeight;
-  }
-  save();
-}
-
-// ── Home ───────────────────────────────────────────────
-function renderHome() {
-  const pending = state.tasks.filter(t=>!t.done);
-  const todayEvents = state.events.filter(e=>e.date===todayStr());
-  const dateStr = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  const prOrder = {high:0,medium:1,low:2};
-  const topTasks = [...pending].sort((a,b)=>prOrder[a.priority]-prOrder[b.priority]).slice(0,3);
-
-  return `
-    <div style="margin-bottom:32px">
-      <div style="font-size:18px;color:var(--textMuted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">${dateStr}</div>
-      <div class="section-title" style="font-size:36px">${greeting()}, <span style="color:var(--accent)">Rafik</span></div>
-      <p style="font-size:17px;color:var(--textMuted);margin-top:6px">Here's your overview for today.</p>
-    </div>
-
-    <div id="installBanner" class="install-banner">
-      <button class="dismiss" onclick="this.parentElement.style.display='none'">&times;</button>
-      <strong>Install Sage</strong> as an app on your device:<br>
-      <b>Samsung:</b> Tap ⋮ menu → "Add page to" → "Home screen"<br>
-      <b>MacBook:</b> Open in Chrome → ⋮ menu → "Install Sage..."
-    </div>
-
-    <!-- Voice quick action -->
-    <div onclick="startVoice('overlay')" style="background:var(--surface);border:1px solid var(--borderLight);border-radius:14px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s">
-      <div style="width:44px;height:44px;border-radius:12px;background:var(--accentSoft);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>
-      </div>
-      <div>
-        <div style="font-size:17px;font-weight:500;color:var(--text)">Voice Command</div>
-        <div style="font-size:18px;color:var(--textDim)">Tap to speak — "Add task...", "Schedule...", or ask Sage</div>
-      </div>
-    </div>
-
-    <div class="stat-grid">
-      <div class="stat-card" onclick="switchTab('tasks')">
-        <div class="stat-value" style="color:var(--medium)">${pending.length}</div>
-        <div class="stat-label">Pending</div>
-      </div>
-      <div class="stat-card" onclick="switchTab('schedule')">
-        <div class="stat-value" style="color:var(--accent)">${todayEvents.length}</div>
-        <div class="stat-label">Today</div>
-      </div>
-      <div class="stat-card" onclick="switchTab('tasks')">
-        <div class="stat-value" style="color:var(--success)">${state.tasks.filter(t=>t.done).length}</div>
-        <div class="stat-label">Done</div>
-      </div>
-    </div>
-    ${topTasks.length ? `
-      <div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Priority Tasks</div>
-      ${topTasks.map(t=>`
-        <div class="card row gap-8">
-          <span style="width:8px;height:8px;border-radius:50%;background:var(--${t.priority});flex-shrink:0"></span>
-          <span class="flex-1 truncate" style="font-size:17px">${esc(t.title)}</span>
-          <span style="font-size:14px;color:var(--textDim);flex-shrink:0">${fmtDate(t.dueDate)}</span>
-        </div>
-      `).join('')}
-    `:''}
-    ${todayEvents.length ? `
-      <div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px">Today's Schedule</div>
-      ${todayEvents.map(e=>`
-        <div class="card row gap-8">
-          <span style="min-width:56px;font-size:16px;font-weight:600;color:var(--accent)">${fmtTime(e.time)}</span>
-          <span style="font-size:17px">${esc(e.title)}</span>
-        </div>
-      `).join('')}
-    `:''}
-  `;
-}
-
-// ── Tasks ──────────────────────────────────────────────
-function renderTasks() {
-  const pending = state.tasks.filter(t=>!t.done).length;
-  const prOrder = {high:0,medium:1,low:2};
-  const sorted = [...state.tasks].sort((a,b)=>{
-    if(a.done!==b.done) return a.done?1:-1;
-    if(a.starred!==b.starred) return b.starred?1:-1;
-    return prOrder[a.priority]-prOrder[b.priority];
-  });
-
-  return `
-    <div class="row-between mb-16">
-      <div>
-        <div class="section-title">Tasks</div>
-        <div class="section-sub" style="margin-bottom:0">${pending} pending</div>
-      </div>
-      <div class="row gap-8">
-        <button class="btn-icon" style="background:var(--surfaceHover);color:var(--textMuted)" onclick="startVoice('overlay')">
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>
-        </button>
-        <button class="btn-icon" onclick="state.addingTask=!state.addingTask;render()">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14m-7-7h14"/></svg>
-        </button>
-      </div>
-    </div>
-    ${state.addingTask ? `
-      <div class="form-panel">
-        <input class="input mb-12" id="taskTitle" placeholder="What needs to be done?" onkeydown="if(event.key==='Enter')addTask()">
-        <div class="row gap-8" style="flex-wrap:wrap">
-          ${['high','medium','low'].map(p=>`<button class="priority-btn" style="border:1px solid var(--${p});color:var(--${p})" onclick="document.getElementById('taskPriority').value='${p}';this.parentElement.querySelectorAll('.priority-btn').forEach(b=>b.style.background='transparent');this.style.background='var(--${p})22'">${p}</button>`).join('')}
-          <input type="hidden" id="taskPriority" value="medium">
-          <input type="date" class="input-sm" id="taskDate" value="${todayStr()}" style="margin-left:auto">
-          <button class="btn-primary" onclick="addTask()">Add</button>
-        </div>
-      </div>
-    `:''}
-    <div style="flex:1;overflow-y:auto">
-      ${sorted.length===0 ? '<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No tasks yet.</div>' :
-        sorted.map(t=>`
-          <div class="card row gap-8" style="opacity:${t.done?.5:1}">
-            <button class="checkbox ${t.done?'done':''}" onclick="toggleTask('${t.id}')">
-              ${t.done?'<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>':''}
-            </button>
-            <div class="flex-1" style="min-width:0">
-              <div class="truncate" style="font-size:17px;${t.done?'text-decoration:line-through':''}">${esc(t.title)}</div>
-              <div class="row gap-8" style="margin-top:4px">
-                <span class="pill" style="color:var(--${t.priority});background:color-mix(in srgb,var(--${t.priority}) 12%,transparent)">${t.priority}</span>
-                <span style="font-size:14px;color:var(--textDim)">${fmtDate(t.dueDate)}</span>
-              </div>
-            </div>
-            <button class="icon-btn-sm" style="color:${t.starred?'var(--accent)':'var(--textDim)'};opacity:${t.starred?1:.4}" onclick="toggleStar('${t.id}')">
-              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            </button>
-            <button class="icon-btn-sm" onclick="removeTask('${t.id}')">
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
-          </div>
-        `).join('')}
-    </div>
-  `;
-}
-function addTask(){
-  const t=document.getElementById('taskTitle')?.value?.trim();if(!t) return;
-  state.tasks.push({id:uid(),title:t,priority:document.getElementById('taskPriority')?.value||'medium',dueDate:document.getElementById('taskDate')?.value||todayStr(),done:false,starred:false});
-  state.addingTask=false; render();
-}
-function toggleTask(id){ const t=state.tasks.find(x=>x.id===id); if(t) t.done=!t.done; render(); }
-function toggleStar(id){ const t=state.tasks.find(x=>x.id===id); if(t) t.starred=!t.starred; render(); }
-function removeTask(id){ state.tasks=state.tasks.filter(x=>x.id!==id); render(); }
-
-// ── Notes ──────────────────────────────────────────────
-function renderNotes() {
-  const an = state.notes.find(n=>n.id===state.activeNote);
-  return `
-    <div class="row-between mb-16">
-      <div class="section-title">Notes</div>
-      <button class="btn-icon" onclick="addNote()">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14m-7-7h14"/></svg>
-      </button>
-    </div>
-    ${!an ? `
-      ${state.notes.length===0 ? '<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No notes yet.</div>' :
-        state.notes.map(n=>`
-          <div class="note-item" onclick="state.activeNote='${n.id}';render()">
-            <div class="note-bar" style="background:${n.color}"></div>
-            <div class="truncate" style="font-size:17px;font-weight:500;padding-left:6px">${esc(n.title)||'Untitled'}</div>
-            <div class="truncate" style="font-size:18px;color:var(--textDim);margin-top:4px;padding-left:6px">${esc(n.body?.slice(0,80))||'Empty note'}</div>
-          </div>
-        `).join('')}
-    ` : `
-      <div class="row-between mb-12">
-        <button class="icon-btn-sm" style="opacity:1;color:var(--textMuted);margin-right:8px" onclick="state.activeNote=null;render()">
-          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M15 19l-7-7 7-7"/></svg>
-        </button>
-        <input class="input flex-1" value="${esc(an.title)}" onchange="updateNote('${an.id}','title',this.value)" style="background:transparent;border:none;font-family:'Playfair Display',serif;font-size:30px;font-weight:600;padding:0">
-        <button class="icon-btn-sm" style="opacity:1;color:var(--danger)" onclick="removeNote('${an.id}')">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-        </button>
-      </div>
-      <textarea class="note-editor" style="flex:1" oninput="updateNote('${an.id}','body',this.value)" placeholder="Start typing...">${esc(an.body)}</textarea>
-    `}
-  `;
-}
-function addNote(){
-  const colors=['#C8A44E','#60A5FA','#F87171','#A78BFA','#34D399'];
-  state.notes.unshift({id:uid(),title:'Untitled Note',body:'',color:colors[Math.floor(Math.random()*5)]});
-  state.activeNote=state.notes[0].id; render();
-}
-function updateNote(id,field,val){ const n=state.notes.find(x=>x.id===id); if(n) n[field]=val; save(); }
-function removeNote(id){ state.notes=state.notes.filter(x=>x.id!==id); state.activeNote=null; render(); }
-
-// ── Schedule ───────────────────────────────────────────
-function renderSchedule() {
-  const sorted = [...state.events].sort((a,b)=>`${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
-  const grouped = {}; sorted.forEach(e=>{ if(!grouped[e.date]) grouped[e.date]=[]; grouped[e.date].push(e); });
-  const upcoming = Object.keys(grouped).filter(d=>d>=todayStr()).sort();
-  const past = Object.keys(grouped).filter(d=>d<todayStr()).sort().reverse();
-
-  return `
-    <div class="row-between mb-16">
-      <div>
-        <div class="section-title">Schedule</div>
-        <div class="section-sub" style="margin-bottom:0">${state.events.filter(e=>e.date>=todayStr()).length} upcoming</div>
-      </div>
-      <div class="row gap-8">
-        <button class="btn-icon" style="background:var(--surfaceHover);color:var(--textMuted)" onclick="startVoice('overlay')">
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>
-        </button>
-        <button class="btn-icon" onclick="state.addingEvent=!state.addingEvent;render()">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14m-7-7h14"/></svg>
-        </button>
-      </div>
-    </div>
-    ${state.addingEvent ? `
-      <div class="form-panel">
-        <input class="input mb-12" id="evTitle" placeholder="Event title" onkeydown="if(event.key==='Enter')addEvent()">
-        <div class="row gap-8" style="flex-wrap:wrap">
-          <input type="date" class="input-sm" id="evDate" value="${todayStr()}">
-          <input type="time" class="input-sm" id="evTime" value="09:00">
-          <select class="input-sm" id="evDuration"><option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>1 hr</option><option value="90">1.5 hr</option><option value="120">2 hr</option></select>
-          <button class="btn-primary" onclick="addEvent()" style="margin-left:auto">Add</button>
-        </div>
-        <input class="input mt-10" id="evNote" placeholder="Notes (optional)" style="font-size:16px">
-      </div>
-    `:''}
-    <div style="flex:1;overflow-y:auto">
-      ${upcoming.length===0&&past.length===0 ? '<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No events scheduled.</div>':''}
-      ${upcoming.map(date=>`
-        <div style="margin-bottom:18px">
-          <div style="font-size:14px;font-weight:600;color:${date===todayStr()?'var(--accent)':'var(--textMuted)'};text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">${date===todayStr()?'Today':fmtDate(date)}</div>
-          ${grouped[date].map(ev=>`
-            <div class="card row gap-8" style="align-items:flex-start">
-              <span style="min-width:56px;font-size:16px;font-weight:600;color:var(--accent)">${fmtTime(ev.time)}</span>
-              <div class="flex-1"><div style="font-size:17px">${esc(ev.title)}</div><div style="font-size:18px;color:var(--textDim);margin-top:2px">${ev.duration} min${ev.note?' · '+esc(ev.note):''}</div></div>
-              <button class="icon-btn-sm" onclick="removeEvent('${ev.id}')"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-            </div>
-          `).join('')}
-        </div>
-      `).join('')}
-      ${past.length?`<div style="font-size:14px;color:var(--textDim);text-transform:uppercase;letter-spacing:1px;margin:10px 0 8px;border-top:1px solid var(--border);padding-top:14px">Past</div>${past.map(date=>`<div style="margin-bottom:12px;opacity:.5"><div style="font-size:14px;color:var(--textDim);margin-bottom:6px">${fmtDate(date)}</div>${grouped[date].map(ev=>`<div class="card row gap-8" style="padding:10px 14px"><span style="min-width:56px;font-size:18px;color:var(--textDim)">${fmtTime(ev.time)}</span><span style="font-size:16px;color:var(--textMuted)">${esc(ev.title)}</span></div>`).join('')}</div>`).join('')}`:''}
-    </div>
-  `;
-}
-function addEvent(){
-  const t=document.getElementById('evTitle')?.value?.trim();if(!t) return;
-  state.events.push({id:uid(),title:t,date:document.getElementById('evDate').value,time:document.getElementById('evTime').value,duration:+document.getElementById('evDuration').value,note:document.getElementById('evNote')?.value||''});
-  state.addingEvent=false; render();
-}
-function removeEvent(id){ state.events=state.events.filter(x=>x.id!==id); render(); }
-
-// ── Chat ───────────────────────────────────────────────
-function renderChat() {
-  return `
-    <div class="row-between" style="margin-bottom:16px">
-      <div class="section-title">Sage</div>
-      <div style="font-size:18px;color:var(--textDim)">AI Secretary</div>
-    </div>
-    <div class="chat-area" id="chatArea" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px">
-      ${state.chatMessages.map(m=>`<div class="msg ${m.role==='user'?'msg-user':'msg-ai'}">${esc(m.content)}</div>`).join('')}
-      ${state.chatLoading?'<div class="msg msg-ai"><span class="typing">Thinking</span></div>':''}
-    </div>
-    <div class="chat-input-row">
-      <input class="input" id="chatInput" placeholder="Ask Sage anything..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendChat()" style="flex:1">
-      <button class="voice-btn ${isRecording&&voiceTarget==='chat'?'recording':''}" id="voiceBtn" onclick="startVoice('chat')">
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>
-      </button>
-      <button class="send-btn" style="background:var(--accentSoft);color:var(--accent)" onclick="sendChat()">
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-4-4l4 4-4 4"/></svg>
-      </button>
-    </div>
-  `;
-}
-
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const msg = input?.value?.trim();
-  if(!msg || state.chatLoading) return;
-  input.value = '';
-  state.chatMessages.push({role:'user',content:msg});
-  state.chatLoading = true;
-  render();
-  await sendChatAPI(msg);
-}
-
-async function sendChatAPI(msg) {
-  const context = `You are Sage, Rafik's personal secretary AI. Rafik is the Chairman of Metal Tube, a steel manufacturing company in Egypt (10th of Ramadan, Sharkia). The company operates in Metal Projects, Scaffolding, Formwork, Storage, Sports Structures, and Metal Arts with 200+ employees.
-
-Current context:
-- Active tasks: ${state.tasks.filter(t=>!t.done).map(t=>`"${t.title}" (${t.priority}, due ${t.dueDate})`).join('; ')||'None'}
-- Notes: ${state.notes.map(n=>`"${n.title}"`).join(', ')||'None'}
-- Upcoming events: ${state.events.filter(e=>e.date>=todayStr()).map(e=>`"${e.title}" on ${e.date} at ${e.time}`).join('; ')||'None'}
-
-Be professional, concise, and proactive. Keep responses under 200 words unless more detail is requested.`;
-
-  const history = state.chatMessages.slice(-10).map(m=>({role:m.role,content:m.content}));
-
-  try {
-    const apiKey = localStorage.getItem('sage_api_key');
-    if(!apiKey) {
-      state.chatMessages.push({role:'assistant',content:"I need an API key to work. Please go to the ⚙️ Settings tab and enter your Anthropic API key.\n\nYou can get one at console.anthropic.com → API Keys → Create Key."});
-      state.chatLoading = false;
-      render();
-      return;
-    }
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:context,messages:history})
-    });
-    const data = await res.json();
-    const reply = data.content?.map(b=>b.text||'').join('\n') || "I apologize — I wasn't able to process that. Could you try again?";
-    state.chatMessages.push({role:'assistant',content:reply});
-  } catch(e) {
-    state.chatMessages.push({role:'assistant',content:"I'm having trouble connecting right now. Please try again in a moment."});
-  }
-  state.chatLoading = false;
-  render();
-}
-
-// ── Install prompt ─────────────────────────────────────
-window.addEventListener('load', () => {
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if(!isStandalone) {
-    setTimeout(() => {
-      const banner = document.getElementById('installBanner');
-      if(banner) banner.style.display = 'block';
-    }, 1000);
-  }
-});
-
-// ── Init ───────────────────────────────────────────────
-render();
+/* === INIT === */
+generateRecurring();initNotifications();render();
 </script>
 </body>
 </html>
