@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sage">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0C0F14">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="application-name" content="Sage">
 <title>Sage — Personal Secretary</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23C8A44E'/><stop offset='100%25' stop-color='%23A07D2E'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='%230C0F14'/><circle cx='50' cy='38' r='16' fill='url(%23g)' opacity='0.9'/><path d='M28 72c0-12.15 9.85-22 22-22s22 9.85 22 22' fill='url(%23g)' opacity='0.7'/><path d='M44 34 l4 6 l8-10' stroke='%230C0F14' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
@@ -15,23 +15,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0C0F14;
-    --surface: #151921;
-    --surfaceHover: #1C2230;
-    --border: #252D3B;
-    --borderLight: #1E2636;
-    --text: #E8ECF4;
-    --textMuted: #7B8499;
-    --textDim: #4A5268;
-    --accent: #C8A44E;
-    --accentSoft: rgba(200,164,78,0.12);
-    --success: #4ADE80;
-    --successSoft: rgba(74,222,128,0.1);
-    --danger: #F87171;
-    --dangerSoft: rgba(248,113,113,0.1);
-    --high: #F87171;
-    --medium: #FBBF24;
-    --low: #60A5FA;
+    --bg: #FFFFFF;
+    --surface: #F5F5F0;
+    --surfaceHover: #EEEEE8;
+    --border: #D4D4CC;
+    --borderLight: #E0E0D8;
+    --text: #1A1A1A;
+    --textMuted: #5C5C5C;
+    --textDim: #8C8C8C;
+    --accent: #9E7C2B;
+    --accentSoft: rgba(158,124,43,0.1);
+    --success: #2E8B57;
+    --successSoft: rgba(46,139,87,0.1);
+    --danger: #C0392B;
+    --dangerSoft: rgba(192,57,43,0.08);
+    --high: #C0392B;
+    --medium: #D4890A;
+    --low: #2874A6;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -55,10 +55,10 @@
   }
   .topbar-brand {
     font-family:'Playfair Display',Georgia,serif;
-    font-size:20px; font-weight:700; color:var(--accent);
+    font-size:30px; font-weight:700; color:var(--accent);
     letter-spacing:0.5px;
   }
-  .topbar-sub { font-size:10px; color:var(--textDim); text-transform:uppercase; letter-spacing:1.5px; }
+  .topbar-sub { font-size:16px; color:var(--textDim); text-transform:uppercase; letter-spacing:1.5px; }
 
   .content { flex:1; overflow-y:auto; padding:20px; -webkit-overflow-scrolling:touch; }
 
@@ -69,24 +69,24 @@
   .nav-btn {
     flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
     padding:8px 0; border:none; background:none; color:var(--textDim);
-    font-family:'DM Sans',sans-serif; font-size:10px; cursor:pointer; transition:color .15s;
+    font-family:'DM Sans',sans-serif; font-size:16px; cursor:pointer; transition:color .15s;
   }
   .nav-btn.active { color:var(--accent); }
-  .nav-btn svg { width:22px; height:22px; }
+  .nav-btn svg { width:26px; height:26px; }
 
   .section-title {
     font-family:'Playfair Display',Georgia,serif;
-    font-size:24px; font-weight:600; margin-bottom:4px;
+    font-size:30px; font-weight:600; margin-bottom:4px;
   }
-  .section-sub { font-size:13px; color:var(--textMuted); margin-bottom:20px; }
+  .section-sub { font-size:16px; color:var(--textMuted); margin-bottom:20px; }
   .card {
     background:var(--surface); border:1px solid var(--borderLight);
     border-radius:12px; padding:14px 16px; margin-bottom:8px; transition:border-color .2s;
   }
   .btn-primary {
-    background:var(--accent); border:none; color:var(--bg);
+    background:var(--accent); border:none; color:#FFFFFF;
     border-radius:10px; padding:10px 20px; font-family:'DM Sans',sans-serif;
-    font-size:14px; font-weight:600; cursor:pointer;
+    font-size:17px; font-weight:600; cursor:pointer;
   }
   .btn-icon {
     width:36px; height:36px; border-radius:10px; border:none;
@@ -96,16 +96,16 @@
   .input {
     width:100%; background:var(--surfaceHover); border:1px solid var(--border);
     border-radius:10px; padding:12px 14px; color:var(--text);
-    font-family:'DM Sans',sans-serif; font-size:14px; outline:none;
+    font-family:'DM Sans',sans-serif; font-size:17px; outline:none;
   }
   .input::placeholder { color:var(--textDim); }
   .input-sm {
     background:var(--surface); border:1px solid var(--border); border-radius:8px;
     padding:7px 10px; color:var(--textMuted); font-family:'DM Sans',sans-serif;
-    font-size:12px; outline:none;
+    font-size:18px; outline:none;
   }
   .pill {
-    font-size:10px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
+    font-size:16px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
     padding:2px 8px; border-radius:5px;
   }
   .row { display:flex; align-items:center; gap:10px; }
@@ -128,8 +128,8 @@
     border-radius:14px; padding:16px 14px; cursor:pointer; transition:all .2s;
   }
   .stat-card:active { transform:scale(0.97); }
-  .stat-value { font-family:'Playfair Display',Georgia,serif; font-size:26px; font-weight:700; }
-  .stat-label { font-size:11px; color:var(--textMuted); margin-top:2px; }
+  .stat-value { font-family:'Playfair Display',Georgia,serif; font-size:32px; font-weight:700; }
+  .stat-label { font-size:14px; color:var(--textMuted); margin-top:2px; }
 
   .checkbox {
     width:22px; height:22px; min-width:22px; border-radius:6px;
@@ -142,8 +142,8 @@
   .chat-area {
     flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-bottom:8px;
   }
-  .msg { max-width:85%; padding:12px 16px; font-size:14px; line-height:1.6; white-space:pre-wrap; }
-  .msg-user { align-self:flex-end; background:var(--accent); color:var(--bg); border-radius:16px 16px 4px 16px; }
+  .msg { max-width:85%; padding:12px 16px; font-size:17px; line-height:1.6; white-space:pre-wrap; }
+  .msg-user { align-self:flex-end; background:var(--accent); color:#FFFFFF; border-radius:16px 16px 4px 16px; }
   .msg-ai { align-self:flex-start; background:var(--surfaceHover); border:1px solid var(--border); border-radius:16px 16px 16px 4px; }
   .chat-input-row { display:flex; gap:8px; margin-top:10px; flex-shrink:0; align-items:center; }
 
@@ -191,7 +191,7 @@
   .note-editor {
     width:100%; min-height:200px; background:var(--surface);
     border:1px solid var(--borderLight); border-radius:12px; padding:16px;
-    color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px;
+    color:var(--text); font-family:'DM Sans',sans-serif; font-size:17px;
     line-height:1.7; outline:none; resize:none;
   }
   .form-panel {
@@ -199,7 +199,7 @@
     margin-bottom:16px; border:1px solid var(--border);
   }
   .priority-btn {
-    border-radius:6px; padding:5px 12px; font-size:12px;
+    border-radius:6px; padding:5px 12px; font-size:18px;
     font-family:'DM Sans',sans-serif; cursor:pointer;
     text-transform:capitalize; background:transparent;
   }
@@ -226,10 +226,10 @@
   }
   .voice-ring svg { width:48px; height:48px; color:var(--danger); }
   .voice-transcript {
-    font-family:'DM Sans',sans-serif; font-size:18px; color:var(--text);
+    font-family:'DM Sans',sans-serif; font-size:22px; color:var(--text);
     text-align:center; max-width:80%; min-height:30px;
   }
-  .voice-hint { font-size:13px; color:var(--textMuted); }
+  .voice-hint { font-size:16px; color:var(--textMuted); }
 
   /* Install banner */
   .install-banner {
@@ -239,14 +239,14 @@
     border-radius:12px;
     padding:14px 16px;
     margin-bottom:16px;
-    font-size:13px;
+    font-size:16px;
     color:var(--textMuted);
     line-height:1.5;
   }
   .install-banner strong { color:var(--accent); }
   .install-banner .dismiss {
     background:none; border:none; color:var(--textDim); cursor:pointer;
-    font-size:18px; float:right; margin:-4px -4px 0 8px;
+    font-size:22px; float:right; margin:-4px -4px 0 8px;
   }
 </style>
 </head>
@@ -258,8 +258,8 @@
     <div class="topbar-sub">Personal Secretary</div>
   </div>
   <div style="text-align:right">
-    <div style="font-size:13px;font-weight:500">Rafik S. Gabriel</div>
-    <div style="font-size:11px;color:var(--textDim)">Chairman · Metal Tube</div>
+    <div style="font-size:16px;font-weight:500">Rafik S. Gabriel</div>
+    <div style="font-size:14px;color:var(--textDim)">Chairman · Metal Tube</div>
   </div>
 </div>
 
@@ -299,7 +299,7 @@
   </button>
   <button class="nav-btn" data-tab="settings" onclick="switchTab('settings')">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-    <span style="font-size:9px">Settings</span>
+    <span style="font-size:18px">Settings</span>
   </button>
 </div>
 
@@ -446,29 +446,29 @@ function renderSettings() {
     <div class="section-title" style="margin-bottom:20px">Settings</div>
 
     <div class="card" style="padding:20px">
-      <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:var(--text)">Anthropic API Key</div>
-      <div style="font-size:12px;color:var(--textMuted);margin-bottom:14px;line-height:1.5">
+      <div style="font-size:18px;font-weight:600;margin-bottom:4px;color:var(--text)">Anthropic API Key</div>
+      <div style="font-size:18px;color:var(--textMuted);margin-bottom:14px;line-height:1.5">
         Required for Sage AI chat. Get your key at
         <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--accent);text-decoration:none"> console.anthropic.com</a>
       </div>
       ${savedKey ? `
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <div style="flex:1;background:var(--surfaceHover);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:monospace;font-size:12px;color:var(--success)">${masked}</div>
-          <button onclick="localStorage.removeItem('sage_api_key');render()" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer">Remove</button>
+          <div style="flex:1;background:var(--surfaceHover);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:monospace;font-size:18px;color:var(--success)">${masked}</div>
+          <button onclick="localStorage.removeItem('sage_api_key');render()" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:18px;cursor:pointer">Remove</button>
         </div>
-        <div style="font-size:12px;color:var(--success)">✓ API key saved — Sage chat is active</div>
+        <div style="font-size:18px;color:var(--success)">✓ API key saved — Sage chat is active</div>
       ` : `
-        <input class="input" id="apiKeyInput" type="password" placeholder="sk-ant-..." style="margin-bottom:10px;font-family:monospace;font-size:13px">
+        <input class="input" id="apiKeyInput" type="password" placeholder="sk-ant-..." style="margin-bottom:10px;font-family:monospace;font-size:16px">
         <button onclick="saveApiKey()" class="btn-primary" style="width:100%">Save API Key</button>
-        <div style="font-size:11px;color:var(--textDim);margin-top:10px;line-height:1.5">
+        <div style="font-size:14px;color:var(--textDim);margin-top:10px;line-height:1.5">
           Your key is stored locally on this device only. It is never sent anywhere except directly to Anthropic's API.
         </div>
       `}
     </div>
 
     <div class="card" style="padding:20px;margin-top:12px">
-      <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:var(--text)">How to get an API key</div>
-      <div style="font-size:13px;color:var(--textMuted);line-height:1.7">
+      <div style="font-size:18px;font-weight:600;margin-bottom:4px;color:var(--text)">How to get an API key</div>
+      <div style="font-size:16px;color:var(--textMuted);line-height:1.7">
         1. Go to <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent);text-decoration:none">console.anthropic.com</a><br>
         2. Sign in or create a free account<br>
         3. Click <b style="color:var(--text)">API Keys</b> in the sidebar<br>
@@ -478,9 +478,9 @@ function renderSettings() {
     </div>
 
     <div class="card" style="padding:20px;margin-top:12px">
-      <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:var(--text)">Clear All Data</div>
-      <div style="font-size:12px;color:var(--textMuted);margin-bottom:12px">Reset tasks, notes, events, and chat history.</div>
-      <button onclick="if(confirm('Are you sure? This will delete all your Sage data on this device.')){localStorage.clear();location.reload()}" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer">Clear Data</button>
+      <div style="font-size:18px;font-weight:600;margin-bottom:4px;color:var(--text)">Clear All Data</div>
+      <div style="font-size:18px;color:var(--textMuted);margin-bottom:12px">Reset tasks, notes, events, and chat history.</div>
+      <button onclick="if(confirm('Are you sure? This will delete all your Sage data on this device.')){localStorage.clear();location.reload()}" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:18px;cursor:pointer">Clear Data</button>
     </div>
   `;
 }
@@ -571,9 +571,9 @@ function renderHome() {
 
   return `
     <div style="margin-bottom:32px">
-      <div style="font-size:12px;color:var(--textMuted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">${dateStr}</div>
-      <div class="section-title" style="font-size:30px">${greeting()}, <span style="color:var(--accent)">Rafik</span></div>
-      <p style="font-size:14px;color:var(--textMuted);margin-top:6px">Here's your overview for today.</p>
+      <div style="font-size:18px;color:var(--textMuted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">${dateStr}</div>
+      <div class="section-title" style="font-size:36px">${greeting()}, <span style="color:var(--accent)">Rafik</span></div>
+      <p style="font-size:17px;color:var(--textMuted);margin-top:6px">Here's your overview for today.</p>
     </div>
 
     <div id="installBanner" class="install-banner">
@@ -589,8 +589,8 @@ function renderHome() {
         <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>
       </div>
       <div>
-        <div style="font-size:14px;font-weight:500;color:var(--text)">Voice Command</div>
-        <div style="font-size:12px;color:var(--textDim)">Tap to speak — "Add task...", "Schedule...", or ask Sage</div>
+        <div style="font-size:17px;font-weight:500;color:var(--text)">Voice Command</div>
+        <div style="font-size:18px;color:var(--textDim)">Tap to speak — "Add task...", "Schedule...", or ask Sage</div>
       </div>
     </div>
 
@@ -609,21 +609,21 @@ function renderHome() {
       </div>
     </div>
     ${topTasks.length ? `
-      <div style="font-size:11px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Priority Tasks</div>
+      <div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Priority Tasks</div>
       ${topTasks.map(t=>`
         <div class="card row gap-8">
           <span style="width:8px;height:8px;border-radius:50%;background:var(--${t.priority});flex-shrink:0"></span>
-          <span class="flex-1 truncate" style="font-size:14px">${esc(t.title)}</span>
-          <span style="font-size:11px;color:var(--textDim);flex-shrink:0">${fmtDate(t.dueDate)}</span>
+          <span class="flex-1 truncate" style="font-size:17px">${esc(t.title)}</span>
+          <span style="font-size:14px;color:var(--textDim);flex-shrink:0">${fmtDate(t.dueDate)}</span>
         </div>
       `).join('')}
     `:''}
     ${todayEvents.length ? `
-      <div style="font-size:11px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px">Today's Schedule</div>
+      <div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px">Today's Schedule</div>
       ${todayEvents.map(e=>`
         <div class="card row gap-8">
-          <span style="min-width:56px;font-size:13px;font-weight:600;color:var(--accent)">${fmtTime(e.time)}</span>
-          <span style="font-size:14px">${esc(e.title)}</span>
+          <span style="min-width:56px;font-size:16px;font-weight:600;color:var(--accent)">${fmtTime(e.time)}</span>
+          <span style="font-size:17px">${esc(e.title)}</span>
         </div>
       `).join('')}
     `:''}
@@ -667,17 +667,17 @@ function renderTasks() {
       </div>
     `:''}
     <div style="flex:1;overflow-y:auto">
-      ${sorted.length===0 ? '<div style="text-align:center;padding:40px;color:var(--textDim);font-size:14px">No tasks yet.</div>' :
+      ${sorted.length===0 ? '<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No tasks yet.</div>' :
         sorted.map(t=>`
           <div class="card row gap-8" style="opacity:${t.done?.5:1}">
             <button class="checkbox ${t.done?'done':''}" onclick="toggleTask('${t.id}')">
               ${t.done?'<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>':''}
             </button>
             <div class="flex-1" style="min-width:0">
-              <div class="truncate" style="font-size:14px;${t.done?'text-decoration:line-through':''}">${esc(t.title)}</div>
+              <div class="truncate" style="font-size:17px;${t.done?'text-decoration:line-through':''}">${esc(t.title)}</div>
               <div class="row gap-8" style="margin-top:4px">
                 <span class="pill" style="color:var(--${t.priority});background:color-mix(in srgb,var(--${t.priority}) 12%,transparent)">${t.priority}</span>
-                <span style="font-size:11px;color:var(--textDim)">${fmtDate(t.dueDate)}</span>
+                <span style="font-size:14px;color:var(--textDim)">${fmtDate(t.dueDate)}</span>
               </div>
             </div>
             <button class="icon-btn-sm" style="color:${t.starred?'var(--accent)':'var(--textDim)'};opacity:${t.starred?1:.4}" onclick="toggleStar('${t.id}')">
@@ -711,12 +711,12 @@ function renderNotes() {
       </button>
     </div>
     ${!an ? `
-      ${state.notes.length===0 ? '<div style="text-align:center;padding:40px;color:var(--textDim);font-size:14px">No notes yet.</div>' :
+      ${state.notes.length===0 ? '<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No notes yet.</div>' :
         state.notes.map(n=>`
           <div class="note-item" onclick="state.activeNote='${n.id}';render()">
             <div class="note-bar" style="background:${n.color}"></div>
-            <div class="truncate" style="font-size:14px;font-weight:500;padding-left:6px">${esc(n.title)||'Untitled'}</div>
-            <div class="truncate" style="font-size:12px;color:var(--textDim);margin-top:4px;padding-left:6px">${esc(n.body?.slice(0,80))||'Empty note'}</div>
+            <div class="truncate" style="font-size:17px;font-weight:500;padding-left:6px">${esc(n.title)||'Untitled'}</div>
+            <div class="truncate" style="font-size:18px;color:var(--textDim);margin-top:4px;padding-left:6px">${esc(n.body?.slice(0,80))||'Empty note'}</div>
           </div>
         `).join('')}
     ` : `
@@ -724,7 +724,7 @@ function renderNotes() {
         <button class="icon-btn-sm" style="opacity:1;color:var(--textMuted);margin-right:8px" onclick="state.activeNote=null;render()">
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <input class="input flex-1" value="${esc(an.title)}" onchange="updateNote('${an.id}','title',this.value)" style="background:transparent;border:none;font-family:'Playfair Display',serif;font-size:20px;font-weight:600;padding:0">
+        <input class="input flex-1" value="${esc(an.title)}" onchange="updateNote('${an.id}','title',this.value)" style="background:transparent;border:none;font-family:'Playfair Display',serif;font-size:30px;font-weight:600;padding:0">
         <button class="icon-btn-sm" style="opacity:1;color:var(--danger)" onclick="removeNote('${an.id}')">
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
         </button>
@@ -772,24 +772,24 @@ function renderSchedule() {
           <select class="input-sm" id="evDuration"><option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>1 hr</option><option value="90">1.5 hr</option><option value="120">2 hr</option></select>
           <button class="btn-primary" onclick="addEvent()" style="margin-left:auto">Add</button>
         </div>
-        <input class="input mt-10" id="evNote" placeholder="Notes (optional)" style="font-size:13px">
+        <input class="input mt-10" id="evNote" placeholder="Notes (optional)" style="font-size:16px">
       </div>
     `:''}
     <div style="flex:1;overflow-y:auto">
-      ${upcoming.length===0&&past.length===0 ? '<div style="text-align:center;padding:40px;color:var(--textDim);font-size:14px">No events scheduled.</div>':''}
+      ${upcoming.length===0&&past.length===0 ? '<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No events scheduled.</div>':''}
       ${upcoming.map(date=>`
         <div style="margin-bottom:18px">
-          <div style="font-size:11px;font-weight:600;color:${date===todayStr()?'var(--accent)':'var(--textMuted)'};text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">${date===todayStr()?'Today':fmtDate(date)}</div>
+          <div style="font-size:14px;font-weight:600;color:${date===todayStr()?'var(--accent)':'var(--textMuted)'};text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">${date===todayStr()?'Today':fmtDate(date)}</div>
           ${grouped[date].map(ev=>`
             <div class="card row gap-8" style="align-items:flex-start">
-              <span style="min-width:56px;font-size:13px;font-weight:600;color:var(--accent)">${fmtTime(ev.time)}</span>
-              <div class="flex-1"><div style="font-size:14px">${esc(ev.title)}</div><div style="font-size:12px;color:var(--textDim);margin-top:2px">${ev.duration} min${ev.note?' · '+esc(ev.note):''}</div></div>
+              <span style="min-width:56px;font-size:16px;font-weight:600;color:var(--accent)">${fmtTime(ev.time)}</span>
+              <div class="flex-1"><div style="font-size:17px">${esc(ev.title)}</div><div style="font-size:18px;color:var(--textDim);margin-top:2px">${ev.duration} min${ev.note?' · '+esc(ev.note):''}</div></div>
               <button class="icon-btn-sm" onclick="removeEvent('${ev.id}')"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
             </div>
           `).join('')}
         </div>
       `).join('')}
-      ${past.length?`<div style="font-size:11px;color:var(--textDim);text-transform:uppercase;letter-spacing:1px;margin:10px 0 8px;border-top:1px solid var(--border);padding-top:14px">Past</div>${past.map(date=>`<div style="margin-bottom:12px;opacity:.5"><div style="font-size:11px;color:var(--textDim);margin-bottom:6px">${fmtDate(date)}</div>${grouped[date].map(ev=>`<div class="card row gap-8" style="padding:10px 14px"><span style="min-width:56px;font-size:12px;color:var(--textDim)">${fmtTime(ev.time)}</span><span style="font-size:13px;color:var(--textMuted)">${esc(ev.title)}</span></div>`).join('')}</div>`).join('')}`:''}
+      ${past.length?`<div style="font-size:14px;color:var(--textDim);text-transform:uppercase;letter-spacing:1px;margin:10px 0 8px;border-top:1px solid var(--border);padding-top:14px">Past</div>${past.map(date=>`<div style="margin-bottom:12px;opacity:.5"><div style="font-size:14px;color:var(--textDim);margin-bottom:6px">${fmtDate(date)}</div>${grouped[date].map(ev=>`<div class="card row gap-8" style="padding:10px 14px"><span style="min-width:56px;font-size:18px;color:var(--textDim)">${fmtTime(ev.time)}</span><span style="font-size:16px;color:var(--textMuted)">${esc(ev.title)}</span></div>`).join('')}</div>`).join('')}`:''}
     </div>
   `;
 }
@@ -805,7 +805,7 @@ function renderChat() {
   return `
     <div class="row-between" style="margin-bottom:16px">
       <div class="section-title">Sage</div>
-      <div style="font-size:12px;color:var(--textDim)">AI Secretary</div>
+      <div style="font-size:18px;color:var(--textDim)">AI Secretary</div>
     </div>
     <div class="chat-area" id="chatArea" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px">
       ${state.chatMessages.map(m=>`<div class="msg ${m.role==='user'?'msg-user':'msg-ai'}">${esc(m.content)}</div>`).join('')}
