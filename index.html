@@ -8,10 +8,10 @@
 <meta name="apple-mobile-web-app-title" content="Sage">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="application-name" content="Sage">
 <title>Sage - Personal Secretary</title>
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU2FnZSIsInNob3J0X25hbWUiOiJTYWdlIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNGRkZGRkYiLCJ0aGVtZV9jb2xvciI6IiNGRkZGRkYifQ==">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 :root{--bg:#FFF;--surface:#F4F3EE;--surfaceHover:#EAE9E2;--border:#D2D0C8;--borderLight:#DDDBD4;--text:#1A1A1A;--textMuted:#555;--textDim:#888;--accent:#9E7C2B;--accentSoft:rgba(158,124,43,.10);--success:#2E7D53;--successSoft:rgba(46,125,83,.10);--danger:#B83220;--dangerSoft:rgba(184,50,32,.08);--high:#B83220;--medium:#C47F09;--low:#2670A0;--info:#5B6ABF;--infoSoft:rgba(91,106,191,.10)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -24,7 +24,7 @@ a{color:var(--accent);text-decoration:none}
 .nav-btn.active{color:var(--accent)}
 .nav-btn svg{width:26px;height:26px}
 .section-title{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:600;margin-bottom:4px}
-.card{background:var(--surface);border:1px solid var(--borderLight);border-radius:12px;padding:14px 16px;margin-bottom:8px;transition:all .15s}
+.card{background:var(--surface);border:1px solid var(--borderLight);border-radius:12px;padding:14px 16px;margin-bottom:8px}
 .btn-primary{background:var(--accent);border:none;color:#FFF;border-radius:10px;padding:12px 22px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer}
 .btn-secondary{background:var(--surfaceHover);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer}
 .btn-sm{background:var(--surfaceHover);border:1px solid var(--border);color:var(--textMuted);border-radius:8px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
@@ -74,17 +74,18 @@ a{color:var(--accent);text-decoration:none}
 .overdue{border-left:3px solid var(--danger)!important}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:998;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.active{display:flex}
-.modal{background:var(--bg);border-radius:16px;padding:24px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.modal{background:var(--bg);border-radius:16px;padding:24px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto}
 .filter-btn{padding:6px 14px;border-radius:20px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--textMuted)}
 .filter-btn.active{background:var(--accent);color:#FFF;border-color:var(--accent)}
 @keyframes bl{0%,20%{opacity:1}50%{opacity:.3}80%,100%{opacity:1}}
 .typing::after{content:'...';animation:bl 1.4s infinite}
+.sync-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}
 </style>
 </head>
 <body>
 <div class="topbar">
   <div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--accent)">Sage</div><div style="font-size:13px;color:var(--textDim);text-transform:uppercase;letter-spacing:1.5px">Personal Secretary</div></div>
-  <div style="text-align:right"><div style="font-size:16px;font-weight:500">Rafik S. Gabriel</div><div style="font-size:14px;color:var(--textDim)">Chairman - Metal Tube</div></div>
+  <div style="text-align:right"><div style="font-size:16px;font-weight:500">Rafik S. Gabriel</div><div style="font-size:14px;color:var(--textDim)">Chairman · Metal Tube</div><div id="syncBadge" style="font-size:12px;color:var(--textDim);margin-top:2px"><span class="sync-dot" style="background:var(--textDim)"></span>Connecting...</div></div>
 </div>
 <div class="content" id="content"></div>
 <div class="voice-overlay" id="voiceOverlay" onclick="stopVoice()">
@@ -124,8 +125,8 @@ var calSVG='<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="
 /* === STATE === */
 var DEFAULTS={
   tasks:[{id:uid(),title:'Review BD Manager candidate shortlist',priority:'high',dueDate:todayStr(),done:false,starred:true,category:'General'},{id:uid(),title:'Prepare Q1 export performance report',priority:'high',dueDate:'2026-03-07',done:false,starred:false,category:'Export/MENA'},{id:uid(),title:'Follow up with MENA distribution leads',priority:'medium',dueDate:'2026-03-05',done:false,starred:false,category:'Export/MENA'}],
-  notes:[{id:uid(),title:'BD Manager Hiring Notes',body:"Key requirements:\n- 5+ years in steel/scaffolding/formwork\n- MENA market experience\n- Strong relationship building\n\nPotential sources:\n- LinkedIn targeting\n- LinkMisr, ACROW competitors",color:'#9E7C2B'}],
-  events:[{id:uid(),title:'Leadership sync with Eng. Samy',date:todayStr(),time:'10:00',duration:60,note:'Monthly review',repeat:'none'},{id:uid(),title:'BD Manager interview - Round 1',date:'2026-03-05',time:'14:00',duration:45,note:'Candidate from scaffolding sector',repeat:'none'}],
+  notes:[{id:uid(),title:'BD Manager Hiring Notes',body:"Key requirements:\n- 5+ years in steel/scaffolding/formwork\n- MENA market experience\n\nPotential sources:\n- LinkedIn targeting\n- LinkMisr, ACROW competitors",color:'#9E7C2B'}],
+  events:[{id:uid(),title:'Leadership sync with Eng. Samy',date:todayStr(),time:'10:00',duration:60,note:'Monthly review',repeat:'none'},{id:uid(),title:'BD Manager interview',date:'2026-03-05',time:'14:00',duration:45,note:'Candidate from scaffolding',repeat:'none'}],
   chatMessages:[{role:'assistant',content:''}]
 };
 function loadState(){
@@ -139,15 +140,73 @@ function loadState(){
   return{tab:'home',tasks:tasks,notes:notes,events:events,chatMessages:chatMessages,activeNote:null,addingTask:false,addingEvent:false,chatLoading:false,searchQuery:'',briefing:null,briefingLoading:false,taskFilter:'all'};
 }
 var state=loadState();
-function save(){try{localStorage.setItem('sage_data',JSON.stringify({tasks:state.tasks,notes:state.notes,events:state.events,chatMessages:state.chatMessages}))}catch(e){}}
+function saveLocal(){try{localStorage.setItem('sage_data',JSON.stringify({tasks:state.tasks,notes:state.notes,events:state.events,chatMessages:state.chatMessages}))}catch(e){}}
+function save(){saveLocal();cloudSave();}
 
-/* === OFFLINE SERVICE WORKER === */
-if('serviceWorker' in navigator){
-  var swCode='self.addEventListener("install",function(e){self.skipWaiting()});self.addEventListener("activate",function(e){e.waitUntil(clients.claim())});self.addEventListener("fetch",function(e){e.respondWith(fetch(e.request).catch(function(){return new Response("Offline - please reconnect",{headers:{"Content-Type":"text/plain"}})}))});';
-  var swBlob=new Blob([swCode],{type:'application/javascript'});
-  var swURL=URL.createObjectURL(swBlob);
-  navigator.serviceWorker.register(swURL).catch(function(){})
+/* ======= FIREBASE REAL-TIME SYNC ======= */
+var firebaseConfig={
+  apiKey:"AIzaSyB6Jvv7g8ESo1FR2su8vCfu696lvug1qvw",
+  authDomain:"sage-ee8cd.firebaseapp.com",
+  databaseURL:"https://sage-ee8cd-default-rtdb.firebaseio.com",
+  projectId:"sage-ee8cd",
+  storageBucket:"sage-ee8cd.firebasestorage.app",
+  messagingSenderId:"791914096529",
+  appId:"1:791914096529:web:d8b75e8e5d69c1de891c30"
+};
+var fbRef=null,syncPaused=false,lastSyncTime=0;
+
+function initFirebase(){
+  try{
+    firebase.initializeApp(firebaseConfig);
+    var db=firebase.database();
+    fbRef=db.ref('sage/data');
+    // Listen for changes from other devices
+    fbRef.on('value',function(snap){
+      if(syncPaused)return;
+      var data=snap.val();
+      if(!data||!data.lastModified)return;
+      if(data.lastModified>lastSyncTime+500){
+        syncPaused=true;
+        if(data.tasks){state.tasks=data.tasks;state.tasks.forEach(function(t){if(!t.category)t.category='General'})}
+        if(data.notes)state.notes=data.notes;
+        if(data.events){state.events=data.events;state.events.forEach(function(e){if(!e.repeat)e.repeat='none'})}
+        lastSyncTime=data.lastModified;
+        saveLocal();
+        render();
+        setSyncStatus('synced');
+        setTimeout(function(){syncPaused=false},1000);
+      }
+    });
+    // Connection status
+    db.ref('.info/connected').on('value',function(snap){
+      if(snap.val()===true)setSyncStatus('connected');
+      else setSyncStatus('offline');
+    });
+    setSyncStatus('connected');
+  }catch(e){
+    console.error('Firebase init error:',e);
+    setSyncStatus('offline');
+  }
 }
+
+function cloudSave(){
+  if(!fbRef||syncPaused)return;
+  lastSyncTime=Date.now();
+  fbRef.set({
+    tasks:state.tasks,
+    notes:state.notes,
+    events:state.events,
+    lastModified:lastSyncTime
+  }).then(function(){setSyncStatus('synced')}).catch(function(){setSyncStatus('offline')});
+}
+
+function setSyncStatus(s){
+  var el=document.getElementById('syncBadge');if(!el)return;
+  if(s==='synced')el.innerHTML='<span class="sync-dot" style="background:var(--success)"></span>Synced';
+  else if(s==='connected')el.innerHTML='<span class="sync-dot" style="background:var(--accent)"></span>Connected';
+  else el.innerHTML='<span class="sync-dot" style="background:var(--textDim)"></span>Offline';
+}
+/* ======= END FIREBASE ======= */
 
 /* === NOTIFICATIONS === */
 function initNotifications(){if(!('Notification' in window))return;if(Notification.permission==='default')Notification.requestPermission();setInterval(checkReminders,60000);checkReminders()}
@@ -167,68 +226,46 @@ function generateRecurring(){var nowStr=todayStr();
     if(next){var ns=next.toISOString().split('T')[0];if(ns>=nowStr){state.events.push({id:uid(),title:ev.title,date:ns,time:ev.time,duration:ev.duration,note:ev.note,repeat:ev.repeat,parentId:ev.id});save()}}
   })}
 
-/* === ICS CALENDAR EXPORT === */
-function exportICS(ev){
-  var dtStart=ev.date.replace(/-/g,'')+'T'+ev.time.replace(':','')+'00';
-  var endDate=new Date(ev.date+'T'+ev.time);endDate.setMinutes(endDate.getMinutes()+ev.duration);
-  var dtEnd=endDate.toISOString().replace(/[-:]/g,'').split('.')[0];
-  var rrule='';if(ev.repeat==='daily')rrule='\nRRULE:FREQ=DAILY';else if(ev.repeat==='weekly')rrule='\nRRULE:FREQ=WEEKLY';else if(ev.repeat==='monthly')rrule='\nRRULE:FREQ=MONTHLY';
-  var ics='BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Sage//EN\nBEGIN:VEVENT\nDTSTART:'+dtStart+'\nDTEND:'+dtEnd+rrule+'\nSUMMARY:'+ev.title+'\nDESCRIPTION:'+(ev.note||'')+'\nEND:VEVENT\nEND:VCALENDAR';
-  var blob=new Blob([ics],{type:'text/calendar'});var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');a.href=url;a.download=ev.title.replace(/\s+/g,'_')+'.ics';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url)
-}
+/* === ICS EXPORT === */
+function exportICS(ev){if(!ev)return;
+  var dtS=ev.date.replace(/-/g,'')+'T'+ev.time.replace(':','')+'00';
+  var end=new Date(ev.date+'T'+ev.time);end.setMinutes(end.getMinutes()+ev.duration);
+  var dtE=end.toISOString().replace(/[-:]/g,'').split('.')[0];
+  var rr='';if(ev.repeat==='daily')rr='\nRRULE:FREQ=DAILY';else if(ev.repeat==='weekly')rr='\nRRULE:FREQ=WEEKLY';else if(ev.repeat==='monthly')rr='\nRRULE:FREQ=MONTHLY';
+  var ics='BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:'+dtS+'\nDTEND:'+dtE+rr+'\nSUMMARY:'+ev.title+'\nDESCRIPTION:'+(ev.note||'')+'\nEND:VEVENT\nEND:VCALENDAR';
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download=ev.title.replace(/\s+/g,'_')+'.ics';document.body.appendChild(a);a.click();document.body.removeChild(a)}
 
-/* === GLOBAL SEARCH === */
+/* === SEARCH === */
 function globalSearch(q){if(!q||q.length<2)return[];var ql=q.toLowerCase();var r=[];
-  state.tasks.forEach(function(t){if(t.title.toLowerCase().indexOf(ql)>=0)r.push({type:'task',item:t,text:t.title,sub:(t.done?'Done':'Pending')+' - '+t.priority})});
+  state.tasks.forEach(function(t){if(t.title.toLowerCase().indexOf(ql)>=0)r.push({type:'task',item:t,text:t.title,sub:(t.done?'Done':'Pending')+' · '+t.priority})});
   state.notes.forEach(function(n){if(n.title.toLowerCase().indexOf(ql)>=0||n.body.toLowerCase().indexOf(ql)>=0)r.push({type:'note',item:n,text:n.title,sub:n.body.slice(0,60)})});
   state.events.forEach(function(e){if(e.title.toLowerCase().indexOf(ql)>=0)r.push({type:'event',item:e,text:e.title,sub:fmtDate(e.date)+' '+fmtTime(e.time)})});
   return r.slice(0,8)}
 
-/* === EDIT MODAL === */
-function openEditTask(id){
-  var t=state.tasks.find(function(x){return x.id===id});if(!t)return;
-  var mc=document.getElementById('editModalContent');
-  mc.innerHTML='<div style="font-size:20px;font-weight:600;margin-bottom:16px">Edit Task</div>'+
-    '<input class="input" id="editTitle" value="'+esc(t.title)+'" style="margin-bottom:10px">'+
-    '<div class="row gap-8" style="flex-wrap:wrap;margin-bottom:10px">'+['high','medium','low'].map(function(p){return'<button class="priority-btn" id="ep_'+p+'" style="border:1px solid var(--'+p+');color:var(--'+p+');'+(t.priority===p?'background:color-mix(in srgb,var(--'+p+') 15%,transparent)':'')+'" onclick="document.getElementById(\'editPriority\').value=\''+p+'\'">'+p+'</button>'}).join('')+'<input type="hidden" id="editPriority" value="'+t.priority+'"></div>'+
-    '<div class="row gap-8" style="margin-bottom:10px"><input type="date" class="input-sm" id="editDate" value="'+t.dueDate+'"><select class="input-sm" id="editCat">'+CATEGORIES.map(function(c){return'<option'+(t.category===c?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div>'+
-    '<div class="row gap-8"><button class="btn-primary" style="flex:1" onclick="saveEditTask(\''+id+'\')">Save</button><button class="btn-secondary" style="flex:1" onclick="closeModal()">Cancel</button></div>';
-  document.getElementById('editModal').classList.add('active');
-}
-function saveEditTask(id){var t=state.tasks.find(function(x){return x.id===id});if(!t)return;
-  t.title=document.getElementById('editTitle').value.trim()||t.title;t.priority=document.getElementById('editPriority').value;t.dueDate=document.getElementById('editDate').value;t.category=document.getElementById('editCat').value;
-  save();closeModal();render()}
-function openEditEvent(id){
-  var ev=state.events.find(function(x){return x.id===id});if(!ev)return;
-  var mc=document.getElementById('editModalContent');
-  mc.innerHTML='<div style="font-size:20px;font-weight:600;margin-bottom:16px">Edit Event</div>'+
-    '<input class="input" id="editEvTitle" value="'+esc(ev.title)+'" style="margin-bottom:10px">'+
-    '<div class="row gap-8" style="flex-wrap:wrap;margin-bottom:10px"><input type="date" class="input-sm" id="editEvDate" value="'+ev.date+'"><input type="time" class="input-sm" id="editEvTime" value="'+ev.time+'"><select class="input-sm" id="editEvDur"><option value="15"'+(ev.duration===15?' selected':'')+'>15 min</option><option value="30"'+(ev.duration===30?' selected':'')+'>30 min</option><option value="60"'+(ev.duration===60?' selected':'')+'>1 hr</option><option value="90"'+(ev.duration===90?' selected':'')+'>1.5 hr</option><option value="120"'+(ev.duration===120?' selected':'')+'>2 hr</option></select><select class="input-sm" id="editEvRepeat"><option value="none"'+(ev.repeat==='none'?' selected':'')+'>No repeat</option><option value="daily"'+(ev.repeat==='daily'?' selected':'')+'>Daily</option><option value="weekly"'+(ev.repeat==='weekly'?' selected':'')+'>Weekly</option><option value="monthly"'+(ev.repeat==='monthly'?' selected':'')+'>Monthly</option></select></div>'+
-    '<input class="input" id="editEvNote" value="'+esc(ev.note||'')+'" placeholder="Notes" style="margin-bottom:12px;font-size:16px">'+
-    '<div class="row gap-8"><button class="btn-primary" style="flex:1" onclick="saveEditEvent(\''+id+'\')">Save</button><button class="btn-secondary" style="flex:1" onclick="closeModal()">Cancel</button></div>';
-  document.getElementById('editModal').classList.add('active');
-}
-function saveEditEvent(id){var ev=state.events.find(function(x){return x.id===id});if(!ev)return;
-  ev.title=document.getElementById('editEvTitle').value.trim()||ev.title;ev.date=document.getElementById('editEvDate').value;ev.time=document.getElementById('editEvTime').value;ev.duration=+document.getElementById('editEvDur').value;ev.repeat=document.getElementById('editEvRepeat').value;ev.note=document.getElementById('editEvNote').value;
-  save();closeModal();render()}
+/* === EDIT MODALS === */
+function openEditTask(id){var t=state.tasks.find(function(x){return x.id===id});if(!t)return;
+  document.getElementById('editModalContent').innerHTML='<div style="font-size:20px;font-weight:600;margin-bottom:16px">Edit Task</div><input class="input" id="editTitle" value="'+esc(t.title)+'" style="margin-bottom:10px"><div class="row gap-8" style="flex-wrap:wrap;margin-bottom:10px">'+['high','medium','low'].map(function(p){return'<button class="priority-btn" style="border:1px solid var(--'+p+');color:var(--'+p+');'+(t.priority===p?'background:color-mix(in srgb,var(--'+p+') 15%,transparent)':'')+'" onclick="document.getElementById(\'editPriority\').value=\''+p+'\'">'+p+'</button>'}).join('')+'<input type="hidden" id="editPriority" value="'+t.priority+'"></div><div class="row gap-8" style="margin-bottom:10px"><input type="date" class="input-sm" id="editDate" value="'+t.dueDate+'"><select class="input-sm" id="editCat">'+CATEGORIES.map(function(c){return'<option'+(t.category===c?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div><div class="row gap-8"><button class="btn-primary" style="flex:1" onclick="saveEditTask(\''+id+'\')">Save</button><button class="btn-secondary" style="flex:1" onclick="closeModal()">Cancel</button></div>';
+  document.getElementById('editModal').classList.add('active')}
+function saveEditTask(id){var t=state.tasks.find(function(x){return x.id===id});if(!t)return;t.title=document.getElementById('editTitle').value.trim()||t.title;t.priority=document.getElementById('editPriority').value;t.dueDate=document.getElementById('editDate').value;t.category=document.getElementById('editCat').value;save();closeModal();render()}
+function openEditEvent(id){var ev=state.events.find(function(x){return x.id===id});if(!ev)return;
+  document.getElementById('editModalContent').innerHTML='<div style="font-size:20px;font-weight:600;margin-bottom:16px">Edit Event</div><input class="input" id="editEvTitle" value="'+esc(ev.title)+'" style="margin-bottom:10px"><div class="row gap-8" style="flex-wrap:wrap;margin-bottom:10px"><input type="date" class="input-sm" id="editEvDate" value="'+ev.date+'"><input type="time" class="input-sm" id="editEvTime" value="'+ev.time+'"><select class="input-sm" id="editEvDur"><option value="15"'+(ev.duration===15?' selected':'')+'>15m</option><option value="30"'+(ev.duration===30?' selected':'')+'>30m</option><option value="60"'+(ev.duration===60?' selected':'')+'>1h</option><option value="90"'+(ev.duration===90?' selected':'')+'>1.5h</option><option value="120"'+(ev.duration===120?' selected':'')+'>2h</option></select><select class="input-sm" id="editEvRepeat"><option value="none"'+(ev.repeat==='none'?' selected':'')+'>No repeat</option><option value="daily"'+(ev.repeat==='daily'?' selected':'')+'>Daily</option><option value="weekly"'+(ev.repeat==='weekly'?' selected':'')+'>Weekly</option><option value="monthly"'+(ev.repeat==='monthly'?' selected':'')+'>Monthly</option></select></div><input class="input" id="editEvNote" value="'+esc(ev.note||'')+'" placeholder="Notes" style="margin-bottom:12px;font-size:16px"><div class="row gap-8"><button class="btn-primary" style="flex:1" onclick="saveEditEvent(\''+id+'\')">Save</button><button class="btn-secondary" style="flex:1" onclick="closeModal()">Cancel</button></div>';
+  document.getElementById('editModal').classList.add('active')}
+function saveEditEvent(id){var ev=state.events.find(function(x){return x.id===id});if(!ev)return;ev.title=document.getElementById('editEvTitle').value.trim()||ev.title;ev.date=document.getElementById('editEvDate').value;ev.time=document.getElementById('editEvTime').value;ev.duration=+document.getElementById('editEvDur').value;ev.repeat=document.getElementById('editEvRepeat').value;ev.note=document.getElementById('editEvNote').value;save();closeModal();render()}
 function closeModal(){document.getElementById('editModal').classList.remove('active')}
 document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
 
 /* === VOICE === */
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var recognition=null,isRecording=false,voiceTarget=null;
 function initSpeech(){if(!SR)return null;var r=new SR();r.continuous=false;r.interimResults=true;r.lang='en-US';
-  r.onresult=function(e){var t='';for(var i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;
-    if(voiceTarget==='chat'){var inp=document.getElementById('chatInput');if(inp)inp.value=t}else{var txt=document.getElementById('voiceOverlayText');if(txt)txt.textContent=t||'Listening...'}
-    if(e.results[e.results.length-1].isFinal){if(voiceTarget==='chat'){var inp2=document.getElementById('chatInput');if(inp2)inp2.value=t}else{processVoiceCommand(t)}}};
+  r.onresult=function(e){var t='';for(var i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;if(voiceTarget==='chat'){var inp=document.getElementById('chatInput');if(inp)inp.value=t}else{var txt=document.getElementById('voiceOverlayText');if(txt)txt.textContent=t||'Listening...'}if(e.results[e.results.length-1].isFinal){if(voiceTarget==='chat'){var inp2=document.getElementById('chatInput');if(inp2)inp2.value=t}else{processVoiceCommand(t)}}};
   r.onend=function(){isRecording=false;updateVoiceUI()};r.onerror=function(){isRecording=false;updateVoiceUI()};return r}
-function updateVoiceUI(){var b=document.getElementById('voiceBtn');if(b){if(isRecording)b.classList.add('recording');else b.classList.remove('recording')}var o=document.getElementById('voiceOverlay');if(o){if(isRecording&&voiceTarget!=='chat')o.classList.add('active');else o.classList.remove('active')}}
-function startVoice(target){if(!SR){alert('Voice not supported. Use Chrome.');return}if(isRecording){stopVoice();return}recognition=initSpeech();if(!recognition)return;voiceTarget=target;isRecording=true;updateVoiceUI();var txt=document.getElementById('voiceOverlayText');if(txt)txt.textContent='Listening...';try{recognition.start()}catch(e){stopVoice()}}
+function updateVoiceUI(){var b=document.getElementById('voiceBtn');if(b)b.classList.toggle('recording',isRecording);var o=document.getElementById('voiceOverlay');if(o)o.classList.toggle('active',isRecording&&voiceTarget!=='chat')}
+function startVoice(target){if(!SR){alert('Voice not supported.');return}if(isRecording){stopVoice();return}recognition=initSpeech();if(!recognition)return;voiceTarget=target;isRecording=true;updateVoiceUI();var txt=document.getElementById('voiceOverlayText');if(txt)txt.textContent='Listening...';try{recognition.start()}catch(e){stopVoice()}}
 function stopVoice(){if(recognition)try{recognition.stop()}catch(e){}isRecording=false;updateVoiceUI()}
-function processVoiceCommand(text){var lower=text.toLowerCase().trim();
-  if(lower.startsWith('add task')||lower.startsWith('new task')){var ti=text.replace(/^(add|new)\s*task\s*/i,'').trim();if(ti){state.tasks.push({id:uid(),title:ti,priority:'medium',dueDate:todayStr(),done:false,starred:false,category:'General'});save();render();return}}
-  if(lower.startsWith('add event')||lower.startsWith('new event')||lower.startsWith('schedule')){var t2=text.replace(/^(add|new)\s*event\s*|^schedule\s*/i,'').trim();if(t2){state.events.push({id:uid(),title:t2,date:todayStr(),time:'09:00',duration:60,note:'',repeat:'none'});save();render();return}}
-  if(lower.startsWith('add note')||lower.startsWith('new note')||lower.startsWith('note')){var t3=text.replace(/^(add|new)?\s*note\s*/i,'').trim();state.notes.unshift({id:uid(),title:t3||'Voice Note',body:'',color:'#9E7C2B'});save();render();return}
+function processVoiceCommand(text){var l=text.toLowerCase().trim();
+  if(l.startsWith('add task')||l.startsWith('new task')){var ti=text.replace(/^(add|new)\s*task\s*/i,'').trim();if(ti){state.tasks.push({id:uid(),title:ti,priority:'medium',dueDate:todayStr(),done:false,starred:false,category:'General'});save();render();return}}
+  if(l.startsWith('add event')||l.startsWith('new event')||l.startsWith('schedule')){var t2=text.replace(/^(add|new)\s*event\s*|^schedule\s*/i,'').trim();if(t2){state.events.push({id:uid(),title:t2,date:todayStr(),time:'09:00',duration:60,note:'',repeat:'none'});save();render();return}}
+  if(l.startsWith('add note')||l.startsWith('new note')||l.startsWith('note')){var t3=text.replace(/^(add|new)?\s*note\s*/i,'').trim();state.notes.unshift({id:uid(),title:t3||'Voice Note',body:'',color:'#9E7C2B'});save();render();return}
   state.tab='chat';document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab==='chat')});state.chatMessages.push({role:'user',content:text});state.chatLoading=true;save();render();sendChatAPI()}
 
 /* === RENDER === */
@@ -242,60 +279,33 @@ function renderHome(){
   var todayEv=state.events.filter(function(e){return e.date===todayStr()});
   var dateStr=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   var prO={high:0,medium:1,low:2};var top3=[].concat(pending).sort(function(a,b){return prO[a.priority]-prO[b.priority]}).slice(0,3);
-  var sr=globalSearch(state.searchQuery);var searchHTML='';
-  if(state.searchQuery&&sr.length>0){searchHTML='<div class="search-results">'+sr.map(function(r){var badge='',color='';if(r.type==='task'){badge='Task';color='var(--medium)'}else if(r.type==='note'){badge='Note';color='var(--low)'}else{badge='Event';color='var(--accent)'}var action='';if(r.type==='task')action='switchTab("tasks")';else if(r.type==='note')action='state.activeNote="'+r.item.id+'";switchTab("notes")';else action='switchTab("schedule")';return'<div class="search-result" onclick="'+action+'"><span class="search-badge" style="color:'+color+';background:'+color+'15">'+badge+'</span><div class="flex-1" style="min-width:0"><div class="truncate" style="font-size:16px">'+esc(r.text)+'</div><div style="font-size:14px;color:var(--textDim)">'+esc(r.sub)+'</div></div></div>'}).join('')+'</div>'}
-  else if(state.searchQuery){searchHTML='<div style="text-align:center;padding:20px;color:var(--textDim);font-size:15px">No results</div>'}
-  var briefH='';
-  if(state.briefingLoading)briefH='<div class="briefing-card"><div style="font-size:16px;color:var(--accent);font-weight:500"><span class="typing">Preparing briefing</span></div></div>';
-  else if(state.briefing)briefH='<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--accent)"><div style="font-size:14px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Today\'s Briefing</div><div style="font-size:16px;line-height:1.7;white-space:pre-wrap">'+esc(state.briefing)+'</div><button onclick="state.briefing=null;render()" style="background:none;border:none;color:var(--textDim);font-size:13px;cursor:pointer;margin-top:8px;text-decoration:underline">Dismiss</button></div>';
-  var overdueH='';
-  if(overdue.length>0)overdueH='<div class="card overdue" style="padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px"><div style="color:var(--danger)"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div><div style="flex:1"><div style="font-size:16px;font-weight:600;color:var(--danger)">'+overdue.length+' overdue task'+(overdue.length>1?'s':'')+'</div><div style="font-size:14px;color:var(--textMuted)">'+overdue.map(function(t){return esc(t.title)}).join(', ')+'</div></div></div>';
-  return '<div style="margin-bottom:20px"><div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">'+dateStr+'</div><div class="section-title" style="font-size:36px">'+greeting()+', <span style="color:var(--accent)">Rafik</span></div><p style="font-size:17px;color:var(--textMuted);margin-top:6px">Here\'s your overview for today.</p></div>'+
-  '<div class="row gap-8" style="margin-bottom:14px"><div style="flex:1;position:relative"><input class="input" placeholder="Search tasks, notes, events..." value="'+esc(state.searchQuery)+'" oninput="state.searchQuery=this.value;render()" style="padding-left:44px"><div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--textDim)">'+searchSVG+'</div></div></div>'+searchHTML+
-  (state.searchQuery?'':
-  overdueH+
-  '<div class="row gap-8" style="margin-bottom:14px"><div class="briefing-card" style="flex:1" onclick="requestBriefing()"><div class="row gap-8"><div style="width:42px;height:42px;border-radius:10px;background:var(--accentSoft);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3H12m7.5-9v9a3 3 0 01-3 3h-9a3 3 0 01-3-3V6.75a3 3 0 013-3h2.25m8.25 0V3.75a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V6h4.5z"/></svg></div><div><div style="font-size:16px;font-weight:500">Today\'s Briefing</div><div style="font-size:14px;color:var(--textDim)">AI daily summary</div></div></div></div><div onclick="startVoice(\'overlay\')" style="width:60px;background:var(--surface);border:1px solid var(--borderLight);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:8px 0"><div style="color:var(--accent)"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg></div><div style="font-size:11px;color:var(--textDim)">Voice</div></div></div>'+briefH+
-  '<div class="stat-grid"><div class="stat-card" onclick="switchTab(\'tasks\')"><div class="stat-value" style="color:var(--medium)">'+pending.length+'</div><div class="stat-label">Pending</div></div><div class="stat-card" onclick="switchTab(\'schedule\')"><div class="stat-value" style="color:var(--accent)">'+todayEv.length+'</div><div class="stat-label">Today</div></div><div class="stat-card" onclick="switchTab(\'tasks\')"><div class="stat-value" style="color:var(--success)">'+state.tasks.filter(function(t){return t.done}).length+'</div><div class="stat-label">Done</div></div></div>'+
-  (top3.length?'<div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Priority Tasks</div>'+top3.map(function(t){return'<div class="card row gap-8'+(isOverdue(t.dueDate)&&!t.done?' overdue':'')+'"><span style="width:10px;height:10px;border-radius:50%;background:var(--'+t.priority+');flex-shrink:0"></span><span class="flex-1 truncate" style="font-size:17px">'+esc(t.title)+'</span><span style="font-size:15px;color:'+(isOverdue(t.dueDate)?'var(--danger)':'var(--textDim)')+';flex-shrink:0">'+fmtDate(t.dueDate)+'</span></div>'}).join(''):'')+
-  (todayEv.length?'<div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px">Today\'s Schedule</div>'+todayEv.map(function(e){return'<div class="card row gap-8"><span style="min-width:60px;font-size:16px;font-weight:600;color:var(--accent)">'+fmtTime(e.time)+'</span><span style="font-size:17px">'+esc(e.title)+'</span></div>'}).join(''):''));
+  var sr=globalSearch(state.searchQuery);var sH='';
+  if(state.searchQuery&&sr.length>0)sH='<div class="search-results">'+sr.map(function(r){var c=r.type==='task'?'var(--medium)':r.type==='note'?'var(--low)':'var(--accent)';var a=r.type==='task'?'switchTab("tasks")':r.type==='note'?'state.activeNote="'+r.item.id+'";switchTab("notes")':'switchTab("schedule")';return'<div class="search-result" onclick="'+a+'"><span class="search-badge" style="color:'+c+';background:'+c+'15">'+r.type+'</span><div class="flex-1" style="min-width:0"><div class="truncate" style="font-size:16px">'+esc(r.text)+'</div><div style="font-size:14px;color:var(--textDim)">'+esc(r.sub)+'</div></div></div>'}).join('')+'</div>';
+  else if(state.searchQuery)sH='<div style="text-align:center;padding:20px;color:var(--textDim)">No results</div>';
+  var bH='';if(state.briefingLoading)bH='<div class="briefing-card"><span class="typing">Preparing briefing</span></div>';
+  else if(state.briefing)bH='<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--accent)"><div style="font-size:14px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Briefing</div><div style="font-size:16px;line-height:1.7;white-space:pre-wrap">'+esc(state.briefing)+'</div><button onclick="state.briefing=null;render()" style="background:none;border:none;color:var(--textDim);font-size:13px;cursor:pointer;margin-top:8px;text-decoration:underline">Dismiss</button></div>';
+  var oH='';if(overdue.length)oH='<div class="card overdue" style="padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px"><div style="color:var(--danger)"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div><div><div style="font-size:16px;font-weight:600;color:var(--danger)">'+overdue.length+' overdue</div><div style="font-size:14px;color:var(--textMuted)">'+overdue.map(function(t){return esc(t.title)}).join(', ')+'</div></div></div>';
+  return '<div style="margin-bottom:20px"><div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">'+dateStr+'</div><div class="section-title" style="font-size:36px">'+greeting()+', <span style="color:var(--accent)">Rafik</span></div></div><div class="row gap-8" style="margin-bottom:14px"><div style="flex:1;position:relative"><input class="input" placeholder="Search tasks, notes, events..." value="'+esc(state.searchQuery)+'" oninput="state.searchQuery=this.value;render()" style="padding-left:44px"><div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--textDim)">'+searchSVG+'</div></div></div>'+sH+(state.searchQuery?'':oH+'<div class="row gap-8" style="margin-bottom:14px"><div class="briefing-card" style="flex:1" onclick="requestBriefing()"><div class="row gap-8"><div style="width:42px;height:42px;border-radius:10px;background:var(--accentSoft);display:flex;align-items:center;justify-content:center;color:var(--accent)"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3H12m7.5-9v9a3 3 0 01-3 3h-9a3 3 0 01-3-3V6.75a3 3 0 013-3h2.25m8.25 0V3.75a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V6h4.5z"/></svg></div><div><div style="font-size:16px;font-weight:500">Today\'s Briefing</div><div style="font-size:14px;color:var(--textDim)">AI daily summary</div></div></div></div><div onclick="startVoice(\'overlay\')" style="width:60px;background:var(--surface);border:1px solid var(--borderLight);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:8px 0"><div style="color:var(--accent)">'+micSVG+'</div><div style="font-size:11px;color:var(--textDim)">Voice</div></div></div>'+bH+'<div class="stat-grid"><div class="stat-card" onclick="switchTab(\'tasks\')"><div class="stat-value" style="color:var(--medium)">'+pending.length+'</div><div class="stat-label">Pending</div></div><div class="stat-card" onclick="switchTab(\'schedule\')"><div class="stat-value" style="color:var(--accent)">'+todayEv.length+'</div><div class="stat-label">Today</div></div><div class="stat-card" onclick="switchTab(\'tasks\')"><div class="stat-value" style="color:var(--success)">'+state.tasks.filter(function(t){return t.done}).length+'</div><div class="stat-label">Done</div></div></div>'+(top3.length?'<div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Priority Tasks</div>'+top3.map(function(t){return'<div class="card row gap-8'+(isOverdue(t.dueDate)?' overdue':'')+'"><span style="width:10px;height:10px;border-radius:50%;background:var(--'+t.priority+');flex-shrink:0"></span><span class="flex-1 truncate" style="font-size:17px">'+esc(t.title)+'</span><span style="font-size:15px;color:'+(isOverdue(t.dueDate)?'var(--danger)':'var(--textDim)')+'">'+fmtDate(t.dueDate)+'</span></div>'}).join(''):'')+
+  (todayEv.length?'<div style="font-size:14px;color:var(--textMuted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px">Schedule</div>'+todayEv.map(function(e){return'<div class="card row gap-8"><span style="min-width:60px;font-size:16px;font-weight:600;color:var(--accent)">'+fmtTime(e.time)+'</span><span style="font-size:17px">'+esc(e.title)+'</span></div>'}).join(''):''));
 }
-
-/* === AI BRIEFING === */
-function requestBriefing(){
-  var apiKey=localStorage.getItem('sage_api_key');if(!apiKey){alert('Add your API key in Settings first.');return}
-  state.briefingLoading=true;render();
-  var p=state.tasks.filter(function(t){return!t.done}).map(function(t){return t.title+' ('+t.priority+', due '+t.dueDate+(isOverdue(t.dueDate)?', OVERDUE':'')+')'}).join('; ');
-  var te=state.events.filter(function(e){return e.date===todayStr()}).map(function(e){return e.title+' at '+e.time}).join('; ');
-  var ue=state.events.filter(function(e){var w=new Date(Date.now()+7*86400000).toISOString().split('T')[0];return e.date>todayStr()&&e.date<=w}).map(function(e){return e.title+' '+fmtDate(e.date)+' '+fmtTime(e.time)}).join('; ');
-  var prompt="Morning briefing for Rafik (max 150 words). Today: "+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+".\n1. Today's schedule: "+(te||'Clear')+" \n2. Tasks: "+(p||'All clear')+"\n3. This week: "+(ue||'Nothing')+"\nBe warm, professional. Bullet points. End with motivation.";
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:'You are Sage, secretary to Rafik Gabriel, Chairman of Metal Tube (steel, Egypt).',messages:[{role:'user',content:prompt}]})}).then(function(r){return r.json()}).then(function(data){
-    state.briefing=data.content?data.content.map(function(b){return b.text||''}).join('\n'):'Could not generate.';state.briefingLoading=false;render()
-  }).catch(function(){state.briefing='Connection error.';state.briefingLoading=false;render()})
-}
+function requestBriefing(){var k=localStorage.getItem('sage_api_key');if(!k){alert('Add API key in Settings.');return}state.briefingLoading=true;render();
+  var p=state.tasks.filter(function(t){return!t.done}).map(function(t){return t.title+' ('+t.priority+')'}).join('; ');
+  var te=state.events.filter(function(e){return e.date===todayStr()}).map(function(e){return e.title+' '+e.time}).join('; ');
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:'You are Sage, secretary to Rafik Gabriel, Chairman of Metal Tube (steel, Egypt).',messages:[{role:'user',content:'Morning briefing (150 words max). Today: '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+'. Schedule: '+(te||'Clear')+'. Tasks: '+(p||'All clear')+'. Be warm, professional, use bullets.'}]})}).then(function(r){return r.json()}).then(function(d){state.briefing=d.content?d.content.map(function(b){return b.text||''}).join('\n'):'Error.';state.briefingLoading=false;render()}).catch(function(){state.briefing='Connection error.';state.briefingLoading=false;render()})}
 
 /* === TASKS === */
 function renderTasks(){
-  var pending=state.tasks.filter(function(t){return!t.done});var doneCount=state.tasks.filter(function(t){return t.done}).length;
+  var pending=state.tasks.filter(function(t){return!t.done}).length;var dc=state.tasks.filter(function(t){return t.done}).length;
   var prO={high:0,medium:1,low:2};var f=state.taskFilter;
-  var filtered=state.tasks;
-  if(f==='active')filtered=filtered.filter(function(t){return!t.done});
-  else if(f==='done')filtered=filtered.filter(function(t){return t.done});
-  else if(f==='overdue')filtered=filtered.filter(function(t){return!t.done&&isOverdue(t.dueDate)});
-  else if(f==='starred')filtered=filtered.filter(function(t){return t.starred&&!t.done});
+  var filtered=f==='active'?state.tasks.filter(function(t){return!t.done}):f==='done'?state.tasks.filter(function(t){return t.done}):f==='overdue'?state.tasks.filter(function(t){return!t.done&&isOverdue(t.dueDate)}):f==='starred'?state.tasks.filter(function(t){return t.starred&&!t.done}):state.tasks;
   var sorted=[].concat(filtered).sort(function(a,b){if(a.done!==b.done)return a.done?1:-1;if(a.starred!==b.starred)return b.starred?1:-1;return prO[a.priority]-prO[b.priority]});
-  var h='<div class="row-between" style="margin-bottom:16px"><div><div class="section-title">Tasks</div><div style="font-size:16px;color:var(--textMuted)">'+pending.length+' pending</div></div><div class="row gap-8"><button class="btn-icon" style="background:var(--surfaceHover);color:var(--textMuted)" onclick="startVoice(\'overlay\')">'+micSVG+'</button><button class="btn-icon" onclick="state.addingTask=!state.addingTask;render()">'+plusSVG+'</button></div></div>';
-  // Filters
-  h+='<div class="row gap-6" style="margin-bottom:14px;flex-wrap:wrap">';
-  ['all','active','starred','overdue','done'].forEach(function(ft){h+='<button class="filter-btn'+(f===ft?' active':'')+'" onclick="state.taskFilter=\''+ft+'\';render()">'+ft.charAt(0).toUpperCase()+ft.slice(1)+'</button>'});
-  h+='</div>';
-  if(state.addingTask){h+='<div class="form-panel"><input class="input" id="taskTitle" placeholder="What needs to be done?" onkeydown="if(event.key===\'Enter\')addTask()" style="margin-bottom:10px"><div class="row gap-8" style="flex-wrap:wrap;margin-bottom:8px">'+['high','medium','low'].map(function(p){return'<button class="priority-btn" style="border:1px solid var(--'+p+');color:var(--'+p+')" onclick="document.getElementById(\'taskPriority\').value=\''+p+'\'">'+p+'</button>'}).join('')+'<input type="hidden" id="taskPriority" value="medium"></div><div class="row gap-8" style="flex-wrap:wrap"><input type="date" class="input-sm" id="taskDate" value="'+todayStr()+'"><select class="input-sm" id="taskCat">'+CATEGORIES.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select><button class="btn-primary" onclick="addTask()" style="margin-left:auto">Add</button></div></div>'}
+  var h='<div class="row-between" style="margin-bottom:16px"><div><div class="section-title">Tasks</div><div style="font-size:16px;color:var(--textMuted)">'+pending+' pending</div></div><div class="row gap-8"><button class="btn-icon" style="background:var(--surfaceHover);color:var(--textMuted)" onclick="startVoice(\'overlay\')">'+micSVG+'</button><button class="btn-icon" onclick="state.addingTask=!state.addingTask;render()">'+plusSVG+'</button></div></div>';
+  h+='<div class="row gap-6" style="margin-bottom:14px;flex-wrap:wrap">';['all','active','starred','overdue','done'].forEach(function(ft){h+='<button class="filter-btn'+(f===ft?' active':'')+'" onclick="state.taskFilter=\''+ft+'\';render()">'+ft.charAt(0).toUpperCase()+ft.slice(1)+'</button>'});h+='</div>';
+  if(state.addingTask)h+='<div class="form-panel"><input class="input" id="taskTitle" placeholder="What needs to be done?" onkeydown="if(event.key===\'Enter\')addTask()" style="margin-bottom:10px"><div class="row gap-8" style="flex-wrap:wrap;margin-bottom:8px">'+['high','medium','low'].map(function(p){return'<button class="priority-btn" style="border:1px solid var(--'+p+');color:var(--'+p+')" onclick="document.getElementById(\'taskPriority\').value=\''+p+'\'">'+p+'</button>'}).join('')+'<input type="hidden" id="taskPriority" value="medium"></div><div class="row gap-8" style="flex-wrap:wrap"><input type="date" class="input-sm" id="taskDate" value="'+todayStr()+'"><select class="input-sm" id="taskCat">'+CATEGORIES.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select><button class="btn-primary" onclick="addTask()" style="margin-left:auto">Add</button></div></div>';
   h+='<div style="flex:1;overflow-y:auto">';
-  if(sorted.length===0)h+='<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">'+(f==='all'?'No tasks yet.':'No '+f+' tasks.')+'</div>';
-  sorted.forEach(function(t){var od=!t.done&&isOverdue(t.dueDate);h+='<div class="card row gap-8'+(od?' overdue':'')+'" style="opacity:'+(t.done?.5:1)+'"><button class="checkbox '+(t.done?'done':'')+'" onclick="toggleTask(\''+t.id+'\')">'+(t.done?checkSVG:'')+'</button><div class="flex-1" style="min-width:0"><div class="truncate" style="font-size:17px;'+(t.done?'text-decoration:line-through':'')+'">'+esc(t.title)+'</div><div class="row gap-6" style="margin-top:5px;flex-wrap:wrap"><span class="pill" style="color:var(--'+t.priority+');background:color-mix(in srgb,var(--'+t.priority+') 12%,transparent)">'+t.priority+'</span>'+(t.category&&t.category!=='General'?'<span class="cat-pill">'+esc(t.category)+'</span>':'')+'<span style="font-size:14px;color:'+(od?'var(--danger)':'var(--textDim)')+'">'+fmtDate(t.dueDate)+(od?' (overdue)':'')+'</span></div></div><button class="icon-btn-sm" style="color:'+(t.starred?'var(--accent)':'var(--textDim)')+';opacity:'+(t.starred?1:.4)+'" onclick="toggleStar(\''+t.id+'\')">'+starSVG+'</button><button class="icon-btn-sm" onclick="openEditTask(\''+t.id+'\')">'+editSVG+'</button><button class="icon-btn-sm" onclick="removeTask(\''+t.id+'\')">'+trashSVG+'</button></div>'});
-  h+='</div>';
-  if(doneCount>0&&f!=='done')h+='<div style="margin-top:12px;text-align:center"><button onclick="clearDone()" class="btn-sm">Clear '+doneCount+' completed task'+(doneCount>1?'s':'')+'</button></div>';
-  return h;
-}
+  if(!sorted.length)h+='<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No '+(f==='all'?'':f+' ')+'tasks.</div>';
+  sorted.forEach(function(t){var od=!t.done&&isOverdue(t.dueDate);h+='<div class="card row gap-8'+(od?' overdue':'')+'" style="opacity:'+(t.done?.5:1)+'"><button class="checkbox '+(t.done?'done':'')+'" onclick="toggleTask(\''+t.id+'\')">'+(t.done?checkSVG:'')+'</button><div class="flex-1" style="min-width:0"><div class="truncate" style="font-size:17px;'+(t.done?'text-decoration:line-through':'')+'">'+esc(t.title)+'</div><div class="row gap-6" style="margin-top:5px;flex-wrap:wrap"><span class="pill" style="color:var(--'+t.priority+');background:color-mix(in srgb,var(--'+t.priority+') 12%,transparent)">'+t.priority+'</span>'+(t.category&&t.category!=='General'?'<span class="cat-pill">'+esc(t.category)+'</span>':'')+'<span style="font-size:14px;color:'+(od?'var(--danger)':'var(--textDim)')+'">'+fmtDate(t.dueDate)+'</span></div></div><button class="icon-btn-sm" style="color:'+(t.starred?'var(--accent)':'var(--textDim)')+';opacity:'+(t.starred?1:.4)+'" onclick="toggleStar(\''+t.id+'\')">'+starSVG+'</button><button class="icon-btn-sm" onclick="openEditTask(\''+t.id+'\')">'+editSVG+'</button><button class="icon-btn-sm" onclick="removeTask(\''+t.id+'\')">'+trashSVG+'</button></div>'});
+  h+='</div>';if(dc>0&&f!=='done')h+='<div style="margin-top:12px;text-align:center"><button onclick="clearDone()" class="btn-sm">Clear '+dc+' completed</button></div>';return h}
 function addTask(){var t=document.getElementById('taskTitle');if(!t||!t.value.trim())return;state.tasks.push({id:uid(),title:t.value.trim(),priority:(document.getElementById('taskPriority')||{}).value||'medium',dueDate:(document.getElementById('taskDate')||{}).value||todayStr(),done:false,starred:false,category:(document.getElementById('taskCat')||{}).value||'General'});state.addingTask=false;save();render()}
 function toggleTask(id){var t=state.tasks.find(function(x){return x.id===id});if(t)t.done=!t.done;save();render()}
 function toggleStar(id){var t=state.tasks.find(function(x){return x.id===id});if(t)t.starred=!t.starred;save();render()}
@@ -303,93 +313,73 @@ function removeTask(id){state.tasks=state.tasks.filter(function(x){return x.id!=
 function clearDone(){state.tasks=state.tasks.filter(function(t){return!t.done});save();render()}
 
 /* === NOTES === */
-function renderNotes(){
-  var an=state.notes.find(function(n){return n.id===state.activeNote});
+function renderNotes(){var an=state.notes.find(function(n){return n.id===state.activeNote});
   var h='<div class="row-between" style="margin-bottom:16px">';
-  if(an)h+='<button class="icon-btn-sm" style="opacity:1;color:var(--textMuted)" onclick="state.activeNote=null;save();render()"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M15 19l-7-7 7-7"/></svg></button>';
+  if(an)h+='<button class="icon-btn-sm" style="opacity:1;color:var(--textMuted)" onclick="state.activeNote=null;render()"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M15 19l-7-7 7-7"/></svg></button>';
   h+='<div class="section-title" style="flex:1">'+(an?'':'Notes')+'</div>';
   if(!an)h+='<button class="btn-icon" onclick="addNote()">'+plusSVG+'</button>';
-  else h+='<button class="icon-btn-sm" style="opacity:1;color:var(--danger)" onclick="removeNote(\''+an.id+'\')">'+trashSVG+'</button>';
-  h+='</div>';
-  if(!an){if(state.notes.length===0)h+='<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No notes yet.</div>';
+  else h+='<button class="icon-btn-sm" style="opacity:1;color:var(--danger)" onclick="removeNote(\''+an.id+'\')">'+trashSVG+'</button>';h+='</div>';
+  if(!an){if(!state.notes.length)h+='<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No notes yet.</div>';
     else state.notes.forEach(function(n){h+='<div class="note-item" onclick="state.activeNote=\''+n.id+'\';render()"><div class="note-bar" style="background:'+n.color+'"></div><div class="truncate" style="font-size:17px;font-weight:500;padding-left:8px">'+esc(n.title||'Untitled')+'</div><div class="truncate" style="font-size:15px;color:var(--textDim);margin-top:4px;padding-left:8px">'+esc((n.body||'').slice(0,80)||'Empty note')+'</div></div>'})}
-  else{h+='<input class="input" value="'+esc(an.title)+'" onchange="updateNote(\''+an.id+'\',\'title\',this.value)" style="background:transparent;border:none;font-family:Playfair Display,serif;font-size:24px;font-weight:600;padding:0;margin-bottom:14px"><textarea class="note-editor" style="flex:1" oninput="updateNote(\''+an.id+'\',\'body\',this.value)" placeholder="Start typing...">'+esc(an.body)+'</textarea>'}
-  return h;
-}
-function addNote(){var colors=['#9E7C2B','#2670A0','#B83220','#7B5EA7','#2E7D53'];state.notes.unshift({id:uid(),title:'Untitled Note',body:'',color:colors[Math.floor(Math.random()*5)]});state.activeNote=state.notes[0].id;save();render()}
-function updateNote(id,field,val){var n=state.notes.find(function(x){return x.id===id});if(n)n[field]=val;save()}
+  else h+='<input class="input" value="'+esc(an.title)+'" onchange="updateNote(\''+an.id+'\',\'title\',this.value)" style="background:transparent;border:none;font-family:Playfair Display,serif;font-size:24px;font-weight:600;padding:0;margin-bottom:14px"><textarea class="note-editor" style="flex:1" oninput="updateNote(\''+an.id+'\',\'body\',this.value)" placeholder="Start typing...">'+esc(an.body)+'</textarea>';
+  return h}
+function addNote(){var c=['#9E7C2B','#2670A0','#B83220','#7B5EA7','#2E7D53'];state.notes.unshift({id:uid(),title:'Untitled Note',body:'',color:c[Math.floor(Math.random()*5)]});state.activeNote=state.notes[0].id;save();render()}
+function updateNote(id,f,v){var n=state.notes.find(function(x){return x.id===id});if(n)n[f]=v;save()}
 function removeNote(id){state.notes=state.notes.filter(function(x){return x.id!==id});state.activeNote=null;save();render()}
 
 /* === SCHEDULE === */
 function renderSchedule(){
   var sorted=[].concat(state.events).sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)});
-  var grouped={};sorted.forEach(function(e){if(!grouped[e.date])grouped[e.date]=[];grouped[e.date].push(e)});
-  var upcoming=Object.keys(grouped).filter(function(d){return d>=todayStr()}).sort();
-  var past=Object.keys(grouped).filter(function(d){return d<todayStr()}).sort().reverse();
+  var g={};sorted.forEach(function(e){if(!g[e.date])g[e.date]=[];g[e.date].push(e)});
+  var up=Object.keys(g).filter(function(d){return d>=todayStr()}).sort();var past=Object.keys(g).filter(function(d){return d<todayStr()}).sort().reverse();
   var h='<div class="row-between" style="margin-bottom:20px"><div><div class="section-title">Schedule</div><div style="font-size:16px;color:var(--textMuted)">'+state.events.filter(function(e){return e.date>=todayStr()}).length+' upcoming</div></div><div class="row gap-8"><button class="btn-icon" style="background:var(--surfaceHover);color:var(--textMuted)" onclick="startVoice(\'overlay\')">'+micSVG+'</button><button class="btn-icon" onclick="state.addingEvent=!state.addingEvent;render()">'+plusSVG+'</button></div></div>';
-  if(state.addingEvent)h+='<div class="form-panel"><input class="input" id="evTitle" placeholder="Event title" onkeydown="if(event.key===\'Enter\')addEvent()" style="margin-bottom:10px"><div class="row gap-8" style="flex-wrap:wrap"><input type="date" class="input-sm" id="evDate" value="'+todayStr()+'"><input type="time" class="input-sm" id="evTime" value="09:00"><select class="input-sm" id="evDuration"><option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>1 hr</option><option value="90">1.5 hr</option><option value="120">2 hr</option></select><select class="input-sm" id="evRepeat"><option value="none">No repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select><button class="btn-primary" onclick="addEvent()" style="margin-left:auto">Add</button></div><input class="input" id="evNote" placeholder="Notes (optional)" style="font-size:16px;margin-top:10px"></div>';
+  if(state.addingEvent)h+='<div class="form-panel"><input class="input" id="evTitle" placeholder="Event title" onkeydown="if(event.key===\'Enter\')addEvent()" style="margin-bottom:10px"><div class="row gap-8" style="flex-wrap:wrap"><input type="date" class="input-sm" id="evDate" value="'+todayStr()+'"><input type="time" class="input-sm" id="evTime" value="09:00"><select class="input-sm" id="evDuration"><option value="15">15m</option><option value="30">30m</option><option value="60" selected>1h</option><option value="90">1.5h</option><option value="120">2h</option></select><select class="input-sm" id="evRepeat"><option value="none">No repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select><button class="btn-primary" onclick="addEvent()" style="margin-left:auto">Add</button></div><input class="input" id="evNote" placeholder="Notes (optional)" style="font-size:16px;margin-top:10px"></div>';
   h+='<div style="flex:1;overflow-y:auto">';
-  if(upcoming.length===0&&past.length===0)h+='<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No events scheduled.</div>';
-  upcoming.forEach(function(date){h+='<div style="margin-bottom:20px"><div style="font-size:14px;font-weight:600;color:'+(date===todayStr()?'var(--accent)':'var(--textMuted)')+';text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">'+(date===todayStr()?'Today':fmtDate(date))+'</div>';grouped[date].forEach(function(ev){h+='<div class="card row gap-8" style="align-items:flex-start"><span style="min-width:60px;font-size:16px;font-weight:600;color:var(--accent)">'+fmtTime(ev.time)+'</span><div class="flex-1"><div style="font-size:17px">'+esc(ev.title)+(ev.repeat&&ev.repeat!=='none'?' <span style="font-size:13px;color:var(--textDim)">&#x1F501; '+ev.repeat+'</span>':'')+'</div><div style="font-size:15px;color:var(--textDim);margin-top:2px">'+ev.duration+' min'+(ev.note?' - '+esc(ev.note):'')+'</div></div><button class="icon-btn-sm" onclick="exportICS(state.events.find(function(e){return e.id===\''+ev.id+'\'}))" title="Add to Calendar">'+calSVG+'</button><button class="icon-btn-sm" onclick="openEditEvent(\''+ev.id+'\')">'+editSVG+'</button><button class="icon-btn-sm" onclick="removeEvent(\''+ev.id+'\')">'+trashSVG+'</button></div>'});h+='</div>'});
+  if(!up.length&&!past.length)h+='<div style="text-align:center;padding:40px;color:var(--textDim);font-size:17px">No events.</div>';
+  up.forEach(function(d){h+='<div style="margin-bottom:20px"><div style="font-size:14px;font-weight:600;color:'+(d===todayStr()?'var(--accent)':'var(--textMuted)')+';text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">'+(d===todayStr()?'Today':fmtDate(d))+'</div>';g[d].forEach(function(ev){h+='<div class="card row gap-8" style="align-items:flex-start"><span style="min-width:60px;font-size:16px;font-weight:600;color:var(--accent)">'+fmtTime(ev.time)+'</span><div class="flex-1"><div style="font-size:17px">'+esc(ev.title)+(ev.repeat&&ev.repeat!=='none'?' <span style="font-size:13px;color:var(--textDim)">&#x1F501;</span>':'')+'</div><div style="font-size:15px;color:var(--textDim);margin-top:2px">'+ev.duration+'min'+(ev.note?' · '+esc(ev.note):'')+'</div></div><button class="icon-btn-sm" onclick="exportICS(state.events.find(function(e){return e.id===\''+ev.id+'\'}))" title="Calendar">'+calSVG+'</button><button class="icon-btn-sm" onclick="openEditEvent(\''+ev.id+'\')">'+editSVG+'</button><button class="icon-btn-sm" onclick="removeEvent(\''+ev.id+'\')">'+trashSVG+'</button></div>'});h+='</div>'});
   if(past.length)h+='<div style="font-size:14px;color:var(--textDim);text-transform:uppercase;letter-spacing:1px;margin:10px 0 8px;border-top:1px solid var(--border);padding-top:14px">Past</div>';
-  past.forEach(function(date){h+='<div style="margin-bottom:12px;opacity:.5"><div style="font-size:14px;color:var(--textDim);margin-bottom:6px">'+fmtDate(date)+'</div>';grouped[date].forEach(function(ev){h+='<div class="card row gap-8" style="padding:12px 16px"><span style="min-width:60px;font-size:15px;color:var(--textDim)">'+fmtTime(ev.time)+'</span><span style="font-size:16px;color:var(--textMuted)">'+esc(ev.title)+'</span></div>'});h+='</div>'});
-  h+='</div>';return h;
-}
+  past.forEach(function(d){h+='<div style="margin-bottom:12px;opacity:.5"><div style="font-size:14px;color:var(--textDim);margin-bottom:6px">'+fmtDate(d)+'</div>';g[d].forEach(function(ev){h+='<div class="card row gap-8" style="padding:12px 16px"><span style="min-width:60px;font-size:15px;color:var(--textDim)">'+fmtTime(ev.time)+'</span><span style="font-size:16px;color:var(--textMuted)">'+esc(ev.title)+'</span></div>'});h+='</div>'});
+  h+='</div>';return h}
 function addEvent(){var t=document.getElementById('evTitle');if(!t||!t.value.trim())return;state.events.push({id:uid(),title:t.value.trim(),date:document.getElementById('evDate').value,time:document.getElementById('evTime').value,duration:+document.getElementById('evDuration').value,note:(document.getElementById('evNote')||{}).value||'',repeat:(document.getElementById('evRepeat')||{}).value||'none'});state.addingEvent=false;save();render()}
 function removeEvent(id){state.events=state.events.filter(function(x){return x.id!==id});save();render()}
 
 /* === CHAT === */
 function renderChat(){
-  var h='<div class="row-between" style="margin-bottom:16px"><div class="section-title">Sage</div><div class="row gap-8"><button class="btn-sm" onclick="state.chatMessages=[{role:\'assistant\',content:\'Chat cleared. How can I help?\'}];save();render()">Clear chat</button><span style="font-size:15px;color:var(--textDim)">AI Secretary</span></div></div><div id="chatArea" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px">';
+  var h='<div class="row-between" style="margin-bottom:16px"><div class="section-title">Sage</div><div class="row gap-8"><button class="btn-sm" onclick="state.chatMessages=[{role:\'assistant\',content:\'Chat cleared.\'}];save();render()">Clear</button><span style="font-size:15px;color:var(--textDim)">AI</span></div></div><div id="chatArea" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px">';
   state.chatMessages.forEach(function(m){h+='<div class="msg '+(m.role==='user'?'msg-user':'msg-ai')+'">'+esc(m.content)+'</div>'});
   if(state.chatLoading)h+='<div class="msg msg-ai"><span class="typing">Thinking</span></div>';
-  h+='</div><div class="chat-input-row"><input class="input" id="chatInput" placeholder="Ask Sage anything..." onkeydown="if(event.key===\'Enter\'&&!event.shiftKey)sendChat()" style="flex:1"><button class="voice-btn '+(isRecording&&voiceTarget==='chat'?'recording':'')+'" id="voiceBtn" onclick="startVoice(\'chat\')"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg></button><button class="send-btn" style="background:var(--accentSoft);color:var(--accent)" onclick="sendChat()"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-4-4l4 4-4 4"/></svg></button></div>';
-  return h;
-}
+  h+='</div><div class="chat-input-row"><input class="input" id="chatInput" placeholder="Ask Sage..." onkeydown="if(event.key===\'Enter\'&&!event.shiftKey)sendChat()" style="flex:1"><button class="voice-btn '+(isRecording&&voiceTarget==='chat'?'recording':'')+'" id="voiceBtn" onclick="startVoice(\'chat\')"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg></button><button class="send-btn" style="background:var(--accentSoft);color:var(--accent)" onclick="sendChat()"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-4-4l4 4-4 4"/></svg></button></div>';return h}
 function sendChat(){var inp=document.getElementById('chatInput');var msg=inp?inp.value.trim():'';if(!msg||state.chatLoading)return;inp.value='';state.chatMessages.push({role:'user',content:msg});state.chatLoading=true;save();render();sendChatAPI()}
-function sendChatAPI(){
-  var apiKey=localStorage.getItem('sage_api_key');
-  if(!apiKey){state.chatMessages.push({role:'assistant',content:"I need an API key. Go to Settings and enter your Anthropic API key."});state.chatLoading=false;save();render();return}
-  var ctx='You are Sage, secretary to Rafik S. Gabriel, Chairman of Metal Tube (steel manufacturing, 10th of Ramadan, Egypt). 200+ employees. Sectors: Metal Projects, Scaffolding, Formwork, Storage, Sports Structures, Metal Arts. Currently pursuing ASME certification and hiring a BD Manager for MENA export expansion.\n\nActive tasks: '+state.tasks.filter(function(t){return!t.done}).map(function(t){return t.title+' ('+t.priority+(t.category!=='General'?', '+t.category:'')+', due '+t.dueDate+')'}).join('; ')+'\nUpcoming events: '+state.events.filter(function(e){return e.date>=todayStr()}).map(function(e){return e.title+' '+e.date+' '+e.time}).join('; ')+'\n\nBe professional, concise, proactive. Under 200 words unless more needed.';
-  var history=state.chatMessages.slice(-10).map(function(m){return{role:m.role,content:m.content}});
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:ctx,messages:history})}).then(function(r){return r.json()}).then(function(data){
-    if(data.error)state.chatMessages.push({role:'assistant',content:'Error: '+(data.error.message||'Check API key.')});
-    else{var reply=data.content?data.content.map(function(b){return b.text||''}).join('\n'):'Please try again.';state.chatMessages.push({role:'assistant',content:reply})}
-    state.chatLoading=false;save();render()
-  }).catch(function(){state.chatMessages.push({role:'assistant',content:'Connection error.'});state.chatLoading=false;save();render()})
-}
+function sendChatAPI(){var k=localStorage.getItem('sage_api_key');
+  if(!k){state.chatMessages.push({role:'assistant',content:"Add your API key in Settings first."});state.chatLoading=false;save();render();return}
+  var ctx='You are Sage, secretary to Rafik S. Gabriel, Chairman of Metal Tube (steel, Egypt, 200+ employees). Sectors: Metal Projects, Scaffolding, Formwork, Storage, Sports, Metal Arts. ASME cert in progress, hiring BD Manager.\nTasks: '+state.tasks.filter(function(t){return!t.done}).map(function(t){return t.title+' ('+t.priority+')'}).join('; ')+'\nEvents: '+state.events.filter(function(e){return e.date>=todayStr()}).map(function(e){return e.title+' '+e.date+' '+e.time}).join('; ')+'\nBe professional, concise. Under 200 words.';
+  var hist=state.chatMessages.slice(-10).map(function(m){return{role:m.role,content:m.content}});
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:ctx,messages:hist})}).then(function(r){return r.json()}).then(function(d){
+    if(d.error)state.chatMessages.push({role:'assistant',content:'Error: '+(d.error.message||'Check API key.')});
+    else state.chatMessages.push({role:'assistant',content:d.content?d.content.map(function(b){return b.text||''}).join('\n'):'Try again.'});
+    state.chatLoading=false;save();render()}).catch(function(){state.chatMessages.push({role:'assistant',content:'Connection error.'});state.chatLoading=false;save();render()})}
 
 /* === SETTINGS === */
-function renderSettings(){
-  var savedKey=localStorage.getItem('sage_api_key')||'';var masked=savedKey?savedKey.slice(0,10)+'...'+savedKey.slice(-4):'';
-  var notifStatus='Notification' in window?(Notification.permission==='granted'?'<span style="color:var(--success)">Enabled</span>':(Notification.permission==='denied'?'<span style="color:var(--danger)">Blocked</span>':'<span style="color:var(--medium)">Not set</span>')):'<span style="color:var(--textDim)">Not supported</span>';
+function renderSettings(){var sk=localStorage.getItem('sage_api_key')||'';var mk=sk?sk.slice(0,10)+'...'+sk.slice(-4):'';
+  var ns='Notification' in window?(Notification.permission==='granted'?'<span style="color:var(--success)">Enabled</span>':Notification.permission==='denied'?'<span style="color:var(--danger)">Blocked</span>':'<span style="color:var(--medium)">Not set</span>'):'<span style="color:var(--textDim)">N/A</span>';
   var h='<div class="section-title" style="margin-bottom:20px">Settings</div>';
-  // API Key
-  h+='<div class="card" style="padding:20px"><div style="font-size:18px;font-weight:600;margin-bottom:6px">Anthropic API Key</div><div style="font-size:15px;color:var(--textMuted);margin-bottom:14px;line-height:1.5">Required for Sage AI. Get at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a></div>';
-  if(savedKey)h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="flex:1;background:var(--surfaceHover);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:monospace;font-size:15px;color:var(--success)">'+masked+'</div><button onclick="localStorage.removeItem(\'sage_api_key\');render()" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:10px 16px;font-size:15px;cursor:pointer">Remove</button></div><div style="font-size:15px;color:var(--success)">&#10003; Active</div>';
-  else h+='<input class="input" id="apiKeyInput" type="password" placeholder="sk-ant-..." style="margin-bottom:12px;font-family:monospace;font-size:16px"><button onclick="saveApiKey()" class="btn-primary" style="width:100%">Save API Key</button>';
+  h+='<div class="card" style="padding:20px"><div style="font-size:18px;font-weight:600;margin-bottom:6px">API Key</div><div style="font-size:15px;color:var(--textMuted);margin-bottom:14px">Get at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a></div>';
+  if(sk)h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="flex:1;background:var(--surfaceHover);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:monospace;font-size:15px;color:var(--success)">'+mk+'</div><button onclick="localStorage.removeItem(\'sage_api_key\');render()" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:10px 16px;font-size:15px;cursor:pointer">Remove</button></div>';
+  else h+='<input class="input" id="apiKeyInput" type="password" placeholder="sk-ant-..." style="margin-bottom:12px;font-family:monospace"><button onclick="saveApiKey()" class="btn-primary" style="width:100%">Save Key</button>';
   h+='</div>';
-  // Notifications
-  h+='<div class="card" style="padding:20px;margin-top:12px"><div class="row-between"><div><div style="font-size:18px;font-weight:600;margin-bottom:4px">Notifications</div><div style="font-size:15px;color:var(--textMuted)">Reminders 10 min before events</div></div><div>'+notifStatus+'</div></div>';
-  if('Notification' in window&&Notification.permission==='default')h+='<button onclick="Notification.requestPermission().then(function(){render()})" class="btn-secondary" style="margin-top:12px;width:100%">Enable Notifications</button>';
+  h+='<div class="card" style="padding:20px;margin-top:12px"><div class="row-between"><div><div style="font-size:18px;font-weight:600">Notifications</div><div style="font-size:15px;color:var(--textMuted)">10 min before events</div></div>'+ns+'</div>';
+  if('Notification' in window&&Notification.permission==='default')h+='<button onclick="Notification.requestPermission().then(function(){render()})" class="btn-secondary" style="margin-top:12px;width:100%">Enable</button>';
   h+='</div>';
-  // Sync
-  h+='<div class="card" style="padding:20px;margin-top:12px"><div style="font-size:18px;font-weight:600;margin-bottom:6px">Sync Between Devices</div><div style="font-size:15px;color:var(--textMuted);margin-bottom:14px;line-height:1.5">Export from one device, import on another.</div><div class="row gap-8"><button onclick="exportData()" class="btn-secondary" style="flex:1">Export</button><button onclick="document.getElementById(\'importFile\').click()" class="btn-secondary" style="flex:1">Import</button></div></div>';
-  // Stats
-  var totalTasks=state.tasks.length;var doneTasks=state.tasks.filter(function(t){return t.done}).length;var totalNotes=state.notes.length;var totalEvents=state.events.length;
-  h+='<div class="card" style="padding:20px;margin-top:12px"><div style="font-size:18px;font-weight:600;margin-bottom:10px">Your Data</div><div style="font-size:16px;color:var(--textMuted);line-height:2">Tasks: <b style="color:var(--text)">'+totalTasks+'</b> ('+doneTasks+' completed)<br>Notes: <b style="color:var(--text)">'+totalNotes+'</b><br>Events: <b style="color:var(--text)">'+totalEvents+'</b></div></div>';
-  // Clear
-  h+='<div class="card" style="padding:20px;margin-top:12px"><div style="font-size:18px;font-weight:600;margin-bottom:6px">Clear All Data</div><button onclick="if(confirm(\'Delete all Sage data?\')){localStorage.removeItem(\'sage_data\');state=loadState();render()}" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:10px 16px;font-size:15px;cursor:pointer">Clear Data</button></div>';
-  // Version
-  h+='<div style="text-align:center;margin-top:24px;color:var(--textDim);font-size:13px">Sage v4.0 — Built for Rafik S. Gabriel</div>';
-  return h;
-}
-function saveApiKey(){var k=(document.getElementById('apiKeyInput')||{}).value;if(!k)return;k=k.trim();if(k.indexOf('sk-ant-')!==0){alert('Invalid key. Should start with sk-ant-');return}localStorage.setItem('sage_api_key',k);render()}
-function exportData(){var data=JSON.stringify({tasks:state.tasks,notes:state.notes,events:state.events,chatMessages:state.chatMessages,exportDate:new Date().toISOString()},null,2);var blob=new Blob([data],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='sage-backup-'+todayStr()+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url)}
-function importData(input){var file=input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var data=JSON.parse(e.target.result);if(!data.tasks&&!data.notes&&!data.events){alert('Invalid file.');return}if(!confirm('Replace all current data?'))return;if(data.tasks)state.tasks=data.tasks;if(data.notes)state.notes=data.notes;if(data.events){data.events.forEach(function(ev){if(!ev.repeat)ev.repeat='none'});state.events=data.events}if(data.chatMessages)state.chatMessages=data.chatMessages;save();render();alert('Imported!')}catch(err){alert('Error reading file.')}};reader.readAsText(file);input.value=''}
+  h+='<div class="card" style="padding:20px;margin-top:12px"><div style="font-size:18px;font-weight:600;margin-bottom:6px">Cloud Sync</div><div style="font-size:15px;color:var(--textMuted);margin-bottom:8px;line-height:1.5">Real-time sync between Samsung and MacBook via Firebase. Changes appear automatically on both devices.</div><div id="syncSettingsStatus" style="font-size:15px">Status: '+(fbRef?'<span style="color:var(--success)">Active</span>':'<span style="color:var(--textDim)">Connecting...</span>')+'</div></div>';
+  h+='<div class="card" style="padding:20px;margin-top:12px"><div style="font-size:18px;font-weight:600;margin-bottom:6px">Backup</div><div class="row gap-8"><button onclick="exportData()" class="btn-secondary" style="flex:1">Export</button><button onclick="document.getElementById(\'importFile\').click()" class="btn-secondary" style="flex:1">Import</button></div></div>';
+  h+='<div class="card" style="padding:20px;margin-top:12px"><div style="font-size:18px;font-weight:600;margin-bottom:8px">Clear All Data</div><button onclick="if(confirm(\'Delete all data?\')){localStorage.removeItem(\'sage_data\');if(fbRef)fbRef.remove();state=loadState();render()}" style="background:var(--dangerSoft);border:none;color:var(--danger);border-radius:8px;padding:10px 16px;font-size:15px;cursor:pointer">Clear Data</button></div>';
+  h+='<div style="text-align:center;margin-top:24px;color:var(--textDim);font-size:13px">Sage v5.0 — Cloud Synced</div>';return h}
+function saveApiKey(){var k=(document.getElementById('apiKeyInput')||{}).value;if(!k)return;k=k.trim();if(k.indexOf('sk-ant-')!==0){alert('Should start with sk-ant-');return}localStorage.setItem('sage_api_key',k);render()}
+function exportData(){var d=JSON.stringify({tasks:state.tasks,notes:state.notes,events:state.events,chatMessages:state.chatMessages},null,2);var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d],{type:'application/json'}));a.download='sage-backup-'+todayStr()+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a)}
+function importData(inp){var f=inp.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){try{var d=JSON.parse(e.target.result);if(!confirm('Replace all data?'))return;if(d.tasks)state.tasks=d.tasks;if(d.notes)state.notes=d.notes;if(d.events)state.events=d.events;if(d.chatMessages)state.chatMessages=d.chatMessages;save();render();alert('Imported!')}catch(err){alert('Invalid file.')}};r.readAsText(f);inp.value=''}
 
 /* === INIT === */
-generateRecurring();initNotifications();render();
+generateRecurring();initNotifications();initFirebase();render();
 </script>
 </body>
 </html>
